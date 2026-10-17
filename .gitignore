@@ -95,3 +95,7 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+# Secrets and local environment configuration
+.env
+.env.*
+!.env.example

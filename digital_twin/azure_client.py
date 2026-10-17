@@ -1,4 +1,4 @@
-﻿"""
+"""
 Reusable Azure Digital Twins client for the glucose Digital Twin project.
 """
 
@@ -32,6 +32,8 @@ def update_patient_twin(
     risk_level: str,
     predicted_event: str,
     prediction_window: str = "Next 2 hours",
+    source_timestamp: str | None = None,
+    delta_30m: float | None = None,
 ) -> None:
     """
     Update the patient twin using JSON Patch.
@@ -50,6 +52,20 @@ def update_patient_twin(
         {"op": "add", "path": "/predictionWindow", "value": str(prediction_window)},
         {"op": "add", "path": "/lastUpdated", "value": now},
     ]
+
+    if source_timestamp is not None:
+        updates.append({
+            "op": "add",
+            "path": "/sourceTimestamp",
+            "value": str(source_timestamp),
+        })
+
+    if delta_30m is not None:
+        updates.append({
+            "op": "add",
+            "path": "/delta30m",
+            "value": float(delta_30m),
+        })
 
     if age is not None:
         updates.append({"op": "add", "path": "/age", "value": int(age)})

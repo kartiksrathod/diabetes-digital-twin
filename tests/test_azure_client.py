@@ -56,6 +56,8 @@ class TestAzureClientWrapper:
             risk_level="HIGH",
             predicted_event="Glucose spike",
             prediction_window="Next 2 hours",
+            source_timestamp="2020-11-02T11:40:00",
+            delta_30m=1.8,
         )
 
         mock_azure_client.update_digital_twin.assert_called_once()
@@ -81,11 +83,9 @@ class TestAzureClientWrapper:
         assert patch_map["/bmi"]["value"] == 27.4
         assert patch_map["/hba1c"]["value"] == 7.1
 
-        # Verify unmodeled fields are NOT patched
-        assert "/sourceTimestamp" not in patch_map
-        assert "/source_timestamp" not in patch_map
-        assert "/delta30m" not in patch_map
-        assert "/delta_30m" not in patch_map
+        # Verify source timestamp and 30m delta
+        assert patch_map["/sourceTimestamp"]["value"] == "2020-11-02T11:40:00"
+        assert patch_map["/delta30m"]["value"] == 1.8
 
     def test_update_patient_twin_omits_none_clinical_values(self, mock_azure_client):
         """When age, bmi, or hba1c are None, they should not be included in patch operations."""

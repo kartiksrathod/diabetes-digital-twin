@@ -464,6 +464,8 @@ def main():
             risk_level=risk_level,
             predicted_event=predicted_event,
             prediction_window="Next 2 hours",
+            source_timestamp=str(source_timestamp),
+            delta_30m=delta_30m,
         )
 
         print(

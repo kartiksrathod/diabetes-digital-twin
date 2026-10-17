@@ -1555,32 +1555,26 @@
 
         const payload = await fetchJson(`${API_BASE}/twin-state/P001`);
         if (!payload.success) throw new Error("Azure twin state was not returned successfully.");
+
         const glucose = payload.current_glucose == null ? null : Number(payload.current_glucose);
         const risk = payload.risk_score == null ? null : Number(payload.risk_score);
-        let matchedIndex = -1;
-        if (glucose != null && risk != null) {
-          matchedIndex = REPLAY_DATA.findIndex(row =>
-            Math.abs(Number(row.glucose) - glucose) < 0.11 &&
-            Math.abs(Number(row.risk) - risk) < 0.005
-          );
-        }
-        const matchingRow = matchedIndex >= 0 ? REPLAY_DATA[matchedIndex] : null;
-        const sourceTimestamp = payload.source_timestamp || (matchingRow ? matchingRow.timestamp : null);
+        const sourceTimestamp = payload.source_timestamp || null;
+
         return {
           patientId: payload.patient_id || "Unknown",
           twinId: payload.twin_id || "P001",
-          session: matchingRow ? "2001_0_20201102" : "Latest Azure twin state",
+          session: "Latest Azure twin state",
           timestampDate: sourceTimestamp ? sourceTimestamp.slice(0, 10) : null,
           sourceTimestamp,
           lastUpdated: payload.last_updated || null,
           stepIndex,
-          matchedIndex: matchedIndex >= 0 ? matchedIndex : REPLAY_DATA.length - 1,
+          matchedIndex: -1,
           totalSteps: REPLAY_DATA.length,
           time: sourceTimestamp ? sourceTimestamp.slice(11, 16) : "Latest",
           glucose,
-          delta30m: payload.delta_30m == null ? (matchingRow ? Number(matchingRow.delta30m) : null) : Number(payload.delta_30m),
+          delta30m: payload.delta_30m == null ? null : Number(payload.delta_30m),
           risk,
-          trend: payload.glucose_trend || (matchingRow ? matchingRow.trend : "Unknown"),
+          trend: payload.glucose_trend || "Unknown",
           level: payload.risk_level || (risk == null ? "UNKNOWN" : (risk >= THRESHOLD ? "HIGH" : "LOW")),
           predictedEvent: payload.predicted_event || "Not available",
           predictionWindow: payload.prediction_window || "Next 2 hours",
