@@ -1,0 +1,27 @@
+{
+  "name": "twin",
+  "version": "1.0.0",
+  "description": "A machine learning and physiological modeling framework for Continuous Glucose Monitoring (CGM) analytics, glucose spike prediction, and clinical context synthesis using the ShanghaiT2DM dataset.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kartiksrathod/diabetes-digital-twin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kartiksrathod/diabetes-digital-twin/issues"
+  },
+  "homepage": "https://github.com/kartiksrathod/diabetes-digital-twin#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1"
+  }
+}

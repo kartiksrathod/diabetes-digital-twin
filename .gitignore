@@ -81,3 +81,17 @@ models/
 # Test coverage artifacts
 .coverage
 htmlcov/
+
+# Node.js dependencies
+node_modules/
+
+# Playwright generated output
+test-results/
+playwright-report/
+blob-report/
+
+# Python test and coverage artifacts
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
