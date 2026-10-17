@@ -27,7 +27,7 @@ class TestLiveAzureReadOnlySmoke:
         assert "riskScore" in twin
         assert 0.0 <= float(twin["riskScore"]) <= 1.0
         assert twin["predictionWindow"] == "Next 2 hours"
-        assert twin["$metadata"]["$model"] == "dtmi:glucosetwin:PatientDigitalTwin;1"
+        assert twin["$metadata"]["$model"] == "dtmi:glucosetwin:PatientDigitalTwin;2"
 
     def test_live_mcp_health_check(self):
         result = mcp_server.digital_twin_health_check(PATIENT_TWIN_ID)
