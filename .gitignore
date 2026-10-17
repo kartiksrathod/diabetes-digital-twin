@@ -77,3 +77,7 @@ models/
 *.pt
 *.pth
 *.onnx
+
+# Test coverage artifacts
+.coverage
+htmlcov/
