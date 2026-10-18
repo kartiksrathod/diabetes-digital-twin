@@ -36,6 +36,10 @@ jobs:
         run: |
           git diff --check HEAD~1 2>/dev/null || git diff --check
 
+      - name: Generate lightweight test fixtures
+        run: |
+          python tests/create_test_fixtures.py
+
       - name: Run Python regression suite with coverage
         run: |
           python -m pytest --cov=. --cov-report=term-missing -v

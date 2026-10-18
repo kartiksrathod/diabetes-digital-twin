@@ -45,20 +45,20 @@ def mock_azure_client(mock_twin_payload):
 
 
 @pytest.fixture(autouse=True)
-def reset_dashboard_api_caches():
-    """Ensure dashboard_api loader caches are clean before and after every test."""
-    try:
-        import dashboard_api
-        dashboard_api._load_dataset.cache_clear()
-        dashboard_api._load_model.cache_clear()
-    except Exception:
-        pass
+def configure_dashboard_test_artifacts(monkeypatch):
+    """Ensure dashboard_api replay endpoints resolve against deterministic test fixtures and clean caches across all tests."""
+    import dashboard_api
+    fixtures_dir = Path(__file__).resolve().parent / "fixtures"
+    fixture_features = fixtures_dir / "fixture_features_v2.csv"
+    fixture_model = fixtures_dir / "fixture_model_b.joblib"
+
+    monkeypatch.setattr(dashboard_api, "FEATURES_PATH", fixture_features)
+    monkeypatch.setattr(dashboard_api, "MODEL_PATH", fixture_model)
+
+    dashboard_api._load_dataset.cache_clear()
+    dashboard_api._load_model.cache_clear()
     try:
         yield
     finally:
-        try:
-            import dashboard_api
-            dashboard_api._load_dataset.cache_clear()
-            dashboard_api._load_model.cache_clear()
-        except Exception:
-            pass
+        dashboard_api._load_dataset.cache_clear()
+        dashboard_api._load_model.cache_clear()
