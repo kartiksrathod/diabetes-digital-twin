@@ -390,8 +390,8 @@ A starting point for experiments with combined health data and models.
 |:--|:--|
 | 💻 **GitHub Repository** | [Open repository](https://github.com/kartiksrathod/diabetes-digital-twin) |
 | 🏗️ **Architecture Diagram** | [View PDF](https://drive.google.com/file/d/1qorq1XEy9iq5TBT-sigGCrkG5YOo8DD1/view?usp=drive_link) |
-| 🎤 **Presentation** | 🔜 Coming soon |
-| 🎬 **Demo Video** | 🔜 Coming soon |
+| 🎤 **Presentation** |[View PDF](https://docs.google.com/presentation/d/16h6F6Qe4msZy9qSArKuqu8pII77lx33e/edit?usp=sharing&ouid=113833214796657597708&rtpof=true&sd=true)|
+| 🎬 **Demo Video** | [Watch Yt Video](https://youtu.be/g3dBnFpAKuk) |
 
 ---
 
