@@ -1,0 +1,163 @@
+T2DM EDA REPORT
+============================================================
+Rows: 112,241
+Columns: 69
+Unique patients: 100
+Unique sessions: 109
+
+DUPLICATES
+------------------------------------------------------------
+Exact duplicate rows: 0
+Duplicate patient-session-timestamp rows: 0
+
+MISSING VALUES
+------------------------------------------------------------
+                                      missing_count  missing_pct
+insulin_sc                                   112241   100.000000
+insulin_iv                                   112241   100.000000
+blood_ketone_mmol_l                          112223    99.983963
+csii_bolus_insulin_iu                        111693    99.511765
+csii_basal_insulin_iu_h                      111250    99.117078
+non_insulin_hypoglycemic_agents              110086    98.080024
+cbg_mg_dl                                    108977    97.091972
+dietary_intake                               108456    96.627792
+postprandial_2h_insulin_pmol_l                62546    55.724735
+postprandial_2h_c_peptide_nmol_l              54604    48.648889
+bun_mmol_l                                    35459    31.591843
+fasting_insulin_pmol_l                        35037    31.215866
+uric_acid_mmol_l                              31457    28.026301
+egfr_ml_min_1_73m2                            31457    28.026301
+creatinine_umol_l                             30120    26.835114
+total_cholesterol_mmol_l                      28990    25.828351
+fasting_c_peptide_nmol_l                      28009    24.954339
+glycated_albumin_pct                          27774    24.744968
+postprandial_2h_glucose_mg_dl                 24218    21.576786
+ldl_mmol_l                                    23658    21.077859
+hdl_mmol_l                                    23658    21.077859
+triglyceride_mmol_l                           23658    21.077859
+hba1c_mmol_mol                                10198     9.085806
+fasting_plasma_glucose_mg_dl                   3659     3.259950
+glucose_lag_60m                                 330     0.294010
+glucose_change_60m                              330     0.294010
+glucose_slope_60m                               330     0.294010
+glucose_change_30m                              110     0.098003
+glucose_lag_30m                                 110     0.098003
+glucose_slope_30m                               110     0.098003
+glucose_mean_30m                                  9     0.008018
+glucose_std_30m                                   9     0.008018
+subject_id                                        0     0.000000
+cgm_mg_dl                                         0     0.000000
+timestamp                                         0     0.000000
+session_id                                        0     0.000000
+has_diet_event                                    0     0.000000
+glucose_spike_next_2h                             0     0.000000
+future_glucose_rise_2h_mg_dl                      0     0.000000
+future_max_glucose_2h_mg_dl                       0     0.000000
+has_non_insulin_agent_event_count_2h              0     0.000000
+has_diet_event_count_2h                           0     0.000000
+csii_bolus_insulin_iu_sum_2h                      0     0.000000
+insulin_iv_sum_2h                                 0     0.000000
+insulin_sc_sum_2h                                 0     0.000000
+glucose_max_60m                                   0     0.000000
+glucose_min_60m                                   0     0.000000
+glucose_std_60m                                   0     0.000000
+glucose_mean_60m                                  0     0.000000
+has_non_insulin_agent_event                       0     0.000000
+glucose_lag_15m                                   0     0.000000
+glucose_change_15m                                0     0.000000
+time_since_prev_min                               0     0.000000
+other_agents                                      0     0.000000
+hypoglycemic_agents                               0     0.000000
+comorbidities                                     0     0.000000
+microvascular_complications                       0     0.000000
+acute_diabetic_complications                      0     0.000000
+macrovascular_complications                       0     0.000000
+diabetes_duration_years                           0     0.000000
+diabetes_type                                     0     0.000000
+weight_kg                                         0     0.000000
+alcohol_status                                    0     0.000000
+smoking_pack_year                                 0     0.000000
+bmi                                               0     0.000000
+age_years                                         0     0.000000
+height_m                                          0     0.000000
+gender_(female_1,_male_2)                         0     0.000000
+hypoglycemia_history                              0     0.000000
+
+TARGET DISTRIBUTION
+------------------------------------------------------------
+glucose_spike_next_2h
+0.0    97251
+1.0    14990
+Positive spike rate: 13.36%
+
+CGM GLUCOSE
+------------------------------------------------------------
+Count: 112,241
+Mean: 140.12
+Median: 129.60
+Std: 50.96
+Min: 39.60
+Max: 468.00
+
+PATIENT OBSERVATION COUNTS
+------------------------------------------------------------
+count     100.000000
+mean     1122.410000
+std       581.979209
+min       245.000000
+25%       715.250000
+50%      1216.000000
+75%      1329.250000
+max      3718.000000
+
+PATIENT-LEVEL SPIKE RATE
+------------------------------------------------------------
+count    100.000000
+mean       0.135940
+std        0.076781
+min        0.000000
+25%        0.081098
+50%        0.126764
+75%        0.189362
+max        0.321025
+
+TOP NUMERIC FEATURES CORRELATED WITH TARGET
+------------------------------------------------------------
+glucose_change_15m                      0.242765
+glucose_change_30m                      0.201225
+glucose_slope_30m                       0.201225
+csii_bolus_insulin_iu                   0.178518
+glucose_std_30m                         0.173686
+has_diet_event_count_2h                 0.164906
+glucose_slope_60m                       0.142871
+glucose_change_60m                      0.142871
+csii_bolus_insulin_iu_sum_2h            0.122814
+has_non_insulin_agent_event_count_2h    0.119863
+has_diet_event                          0.117308
+blood_ketone_mmol_l                     0.116902
+cgm_mg_dl                               0.113525
+glucose_std_60m                         0.110982
+has_non_insulin_agent_event             0.097376
+glycated_albumin_pct                    0.096918
+glucose_mean_30m                        0.091052
+glucose_max_60m                         0.085663
+hba1c_mmol_mol                          0.085443
+postprandial_2h_glucose_mg_dl           0.081060
+
+MODEL LEAKAGE CHECK
+------------------------------------------------------------
+future_glucose_rise_2h_mg_dl: PRESENT - EXCLUDE FROM FEATURES
+future_max_glucose_2h_mg_dl: PRESENT - EXCLUDE FROM FEATURES
+glucose_spike_next_2h: PRESENT - EXCLUDE FROM FEATURES
+
+COLUMNS >= 95% MISSING
+------------------------------------------------------------
+                                 missing_count  missing_pct
+insulin_sc                              112241   100.000000
+insulin_iv                              112241   100.000000
+blood_ketone_mmol_l                     112223    99.983963
+csii_bolus_insulin_iu                   111693    99.511765
+csii_basal_insulin_iu_h                 111250    99.117078
+non_insulin_hypoglycemic_agents         110086    98.080024
+cbg_mg_dl                               108977    97.091972
+dietary_intake                          108456    96.627792

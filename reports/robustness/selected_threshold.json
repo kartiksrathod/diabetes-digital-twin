@@ -1,0 +1,31 @@
+{
+  "selected_threshold": 0.5690672397613525,
+  "selection_rule": "maximize validation F1",
+  "validation_best_precision": 0.34919436052366565,
+  "validation_best_recall": 0.467003367003367,
+  "validation_best_f1": 0.39959665802362426,
+  "test_metrics_at_selected_threshold": {
+    "threshold": 0.5690672397613525,
+    "precision": 0.3239409249902837,
+    "recall": 0.5474548440065682,
+    "f1": 0.40703210841167137,
+    "tn": 15721,
+    "fp": 3479,
+    "fn": 1378,
+    "tp": 1667,
+    "roc_auc": 0.7508732553366173,
+    "pr_auc": 0.37116775829840243
+  },
+  "test_metrics_at_0.50": {
+    "threshold": 0.5,
+    "precision": 0.27075959705962427,
+    "recall": 0.6532019704433497,
+    "f1": 0.382831296314118,
+    "tn": 13843,
+    "fp": 5357,
+    "fn": 1056,
+    "tp": 1989,
+    "roc_auc": 0.7508732553366173,
+    "pr_auc": 0.37116775829840243
+  }
+}

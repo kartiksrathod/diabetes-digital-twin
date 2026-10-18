@@ -1,0 +1,21 @@
+feature,importance
+num__missingindicator_hba1c_mmol_mol,0.012446551
+"cat__comorbidities_hepatic dysfunction, hypertension",0.0132008055
+num__weight_kg,0.013754519
+num__diabetes_duration_years,0.013765488
+"cat__other_agents_atorvastatin, aspirin",0.013961311
+cat__non_insulin_hypoglycemic_agents___MISSING__,0.014011029
+cat__other_agents_Yinxingye tablet (extract of Ginkgo biloba leaves),0.014102372
+num__missingindicator_egfr_ml_min_1_73m2,0.015618239
+num__csii_bolus_insulin_iu_sum_2h,0.017008748
+num__glucose_change_30m,0.017179262
+num__hba1c_mmol_mol,0.018748345
+num__glucose_std_30m,0.01922925
+num__missingindicator_postprandial_2h_c_peptide_nmol_l,0.021305764
+num__missingindicator_fasting_plasma_glucose_mg_dl,0.021887992
+num__glycated_albumin_pct,0.022018554
+cat__macrovascular_complications_cerebrovascular disease,0.027594056
+num__has_diet_event_count_2h,0.031075016
+cat__dietary_intake___MISSING__,0.031364597
+num__glucose_change_15m,0.035951484
+num__has_diet_event,0.038934123
