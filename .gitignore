@@ -64,15 +64,18 @@ data/processed/*
 # Track lightweight evaluation and benchmark metrics
 !data/processed/model_comparison.csv
 !data/processed/rf_threshold_results.csv
+!data/processed/final_test_results.csv
+!data/processed/model_b_threshold_results.csv
 
 # macOS archive artifacts
 __MACOSX/
 ._*
 
 # Model checkpoints / binary weights
-models/
+/models/
 *.pkl
 *.joblib
+!tests/fixtures/*.joblib
 *.h5
 *.pt
 *.pth

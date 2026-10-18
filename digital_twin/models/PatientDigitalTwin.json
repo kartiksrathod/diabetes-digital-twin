@@ -1,0 +1,73 @@
+{
+  "@id": "dtmi:glucosetwin:PatientDigitalTwin;2",
+  "@type": "Interface",
+  "@context": "dtmi:dtdl:context;2",
+  "displayName": "Patient Digital Twin",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "patientId",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "age",
+      "schema": "integer"
+    },
+    {
+      "@type": "Property",
+      "name": "bmi",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "hba1c",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "currentGlucose",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "glucoseTrend",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "riskScore",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "riskLevel",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "predictedEvent",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "predictionWindow",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "lastUpdated",
+      "schema": "dateTime"
+    },
+    {
+      "@type": "Property",
+      "name": "sourceTimestamp",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "delta30m",
+      "schema": "double"
+    }
+  ]
+}

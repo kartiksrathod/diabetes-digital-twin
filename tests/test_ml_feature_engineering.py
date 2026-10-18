@@ -34,6 +34,12 @@ VAL_PATH = PROJECT_ROOT / "data" / "processed" / "validation.csv"
 TEST_PATH = PROJECT_ROOT / "data" / "processed" / "test.csv"
 FINAL_RESULTS_PATH = PROJECT_ROOT / "data" / "processed" / "final_test_results.csv"
 
+FIXTURE_MODEL_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_model_b.joblib"
+FIXTURE_FEATURES_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_features_v2.csv"
+FIXTURE_TRAIN_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_train.csv"
+FIXTURE_VAL_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_validation.csv"
+FIXTURE_TEST_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_test.csv"
+
 EXPECTED_40_FEATURES = [
     "glucose_t0",
     "glucose_t_minus_15m",
@@ -134,12 +140,13 @@ class TestModelImmutabilityAndInference:
 
     @pytest.fixture(scope="class")
     def model(self):
-        assert MODEL_PATH.exists(), f"Model missing at {MODEL_PATH}"
-        return joblib.load(MODEL_PATH)
+        assert FIXTURE_MODEL_PATH.exists(), f"Fixture model missing at {FIXTURE_MODEL_PATH}"
+        return joblib.load(FIXTURE_MODEL_PATH)
 
     @pytest.fixture(scope="class")
     def sample_features(self):
-        df = pd.read_csv(FEATURES_V2_PATH, nrows=20, low_memory=False)
+        assert FIXTURE_FEATURES_PATH.exists(), f"Fixture features missing at {FIXTURE_FEATURES_PATH}"
+        df = pd.read_csv(FIXTURE_FEATURES_PATH, nrows=20, low_memory=False)
         return df[EXPECTED_40_FEATURES]
 
     def test_inference_does_not_mutate_model_parameters(self, model, sample_features):
@@ -190,10 +197,10 @@ class TestDatasetAndSplittingIntegrity:
     """Tests patient-level split separation, held-out evaluation, and leakage absence."""
 
     def test_patient_splits_are_mutually_disjoint(self):
-        """Train, validation, and test splits must share zero patient IDs."""
-        train_df = pd.read_csv(TRAIN_PATH, usecols=["patient_id"])
-        val_df = pd.read_csv(VAL_PATH, usecols=["patient_id"])
-        test_df = pd.read_csv(TEST_PATH, usecols=["patient_id"])
+        """Train, validation, and test splits must share zero patient IDs (tested via fixtures)."""
+        train_df = pd.read_csv(FIXTURE_TRAIN_PATH, usecols=["patient_id"])
+        val_df = pd.read_csv(FIXTURE_VAL_PATH, usecols=["patient_id"])
+        test_df = pd.read_csv(FIXTURE_TEST_PATH, usecols=["patient_id"])
 
         train_patients = set(train_df["patient_id"].astype(str).str.strip())
         val_patients = set(val_df["patient_id"].astype(str).str.strip())
@@ -208,8 +215,46 @@ class TestDatasetAndSplittingIntegrity:
         assert train_patients.isdisjoint(test_patients), "Train and test splits share patients"
         assert val_patients.isdisjoint(test_patients), "Validation and test splits share patients"
 
+    def test_production_splits_disjoint_when_available(self):
+        """Validates patient disjointness on full production splits when present."""
+        if not TRAIN_PATH.exists():
+            pytest.skip("Full production splits not present in clean checkout")
+        train_df = pd.read_csv(TRAIN_PATH, usecols=["patient_id"])
+        val_df = pd.read_csv(VAL_PATH, usecols=["patient_id"])
+        test_df = pd.read_csv(TEST_PATH, usecols=["patient_id"])
+
+        train_patients = set(train_df["patient_id"].astype(str).str.strip())
+        val_patients = set(val_df["patient_id"].astype(str).str.strip())
+        test_patients = set(test_df["patient_id"].astype(str).str.strip())
+
+        assert len(train_patients) > 0
+        assert len(val_patients) > 0
+        assert len(test_patients) > 0
+        assert train_patients.isdisjoint(val_patients)
+        assert train_patients.isdisjoint(test_patients)
+        assert val_patients.isdisjoint(test_patients)
+
     def test_features_v2_columns_and_absence_of_future_leakage(self):
         """Features dataset must contain all 40 features and exclude future spike labels from predictors."""
+        df_head = pd.read_csv(FIXTURE_FEATURES_PATH, nrows=5)
+        for feature in EXPECTED_40_FEATURES:
+            assert feature in df_head.columns, f"Missing feature {feature} in {FIXTURE_FEATURES_PATH}"
+
+        # Target and future columns must never be in the predictor list
+        forbidden_leakage = {
+            "spike_label",
+            "future_max_2h",
+            "future_increase_2h",
+            "patient_id",
+            "session_id",
+            "timestamp",
+        }
+        assert forbidden_leakage.isdisjoint(set(EXPECTED_40_FEATURES))
+
+    def test_production_features_v2_columns_when_available(self):
+        """Validates feature columns on full production dataset when available."""
+        if not FEATURES_V2_PATH.exists():
+            pytest.skip("Production features dataset not present in clean checkout")
         df_head = pd.read_csv(FEATURES_V2_PATH, nrows=5)
         for feature in EXPECTED_40_FEATURES:
             assert feature in df_head.columns, f"Missing feature {feature} in {FEATURES_V2_PATH}"

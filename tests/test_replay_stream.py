@@ -90,6 +90,11 @@ class TestReplayStreamExecution:
     @patch("ml.replay_stream.get_client")
     @patch("ml.replay_stream.update_patient_twin")
     def test_replay_invokes_azure_with_correct_payload(self, mock_update, mock_get_client):
+        from pathlib import Path
+        fixtures_dir = Path(__file__).resolve().parent / "fixtures"
+        fixture_v2 = fixtures_dir / "fixture_features_v2.csv"
+        fixture_model = fixtures_dir / "fixture_model_b.joblib"
+
         mock_client = MagicMock()
         mock_client.get_digital_twin.return_value = {"$dtId": "P001", "patientId": "2001"}
         mock_get_client.return_value = mock_client
@@ -103,7 +108,9 @@ class TestReplayStreamExecution:
             "--delay", "0.0",
         ]
 
-        with patch("sys.argv", test_args):
+        with patch("sys.argv", test_args), \
+             patch("ml.replay_stream.V2_PATH", fixture_v2), \
+             patch("ml.replay_stream.MODEL_PATH", fixture_model):
             from ml.replay_stream import main
             main()
 
@@ -126,6 +133,11 @@ class TestReplayStreamExecution:
 
     @patch("ml.replay_stream.get_client")
     def test_replay_fails_cleanly_if_target_twin_missing(self, mock_get_client):
+        from pathlib import Path
+        fixtures_dir = Path(__file__).resolve().parent / "fixtures"
+        fixture_v2 = fixtures_dir / "fixture_features_v2.csv"
+        fixture_model = fixtures_dir / "fixture_model_b.joblib"
+
         mock_client = MagicMock()
         mock_client.get_digital_twin.side_effect = RuntimeError("Twin P999 does not exist")
         mock_get_client.return_value = mock_client
@@ -137,7 +149,9 @@ class TestReplayStreamExecution:
             "--delay", "0.0",
         ]
 
-        with patch("sys.argv", test_args):
+        with patch("sys.argv", test_args), \
+             patch("ml.replay_stream.V2_PATH", fixture_v2), \
+             patch("ml.replay_stream.MODEL_PATH", fixture_model):
             from ml.replay_stream import main
             with pytest.raises(RuntimeError, match="Twin P999 does not exist"):
                 main()

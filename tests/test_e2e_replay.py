@@ -25,6 +25,7 @@ from ml.replay_stream import FEATURES, glucose_trend
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = PROJECT_ROOT / "data" / "processed" / "model_b_random_forest.joblib"
+FIXTURE_MODEL_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_model_b.joblib"
 INDEX_HTML_PATH = PROJECT_ROOT / "dashboard" / "index.html"
 
 
@@ -83,9 +84,10 @@ class TestEndToEndReplayFlow:
     """Verifies the complete flow from CGM row to model to Azure patch to API serialization."""
 
     def test_complete_replay_pipeline_cycle(self, deterministic_cgm_fixture):
-        # 1. Load model and verify pipeline readiness
-        assert MODEL_PATH.exists()
-        model = joblib.load(MODEL_PATH)
+        # 1. Load model and verify pipeline readiness (using deterministic fixture in CI)
+        target_model = FIXTURE_MODEL_PATH if FIXTURE_MODEL_PATH.exists() else MODEL_PATH
+        assert target_model.exists(), f"Model missing at {target_model}"
+        model = joblib.load(target_model)
         row = deterministic_cgm_fixture.iloc[0]
 
         # 2. Execute inference through 40-feature contract

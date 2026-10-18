@@ -17,6 +17,28 @@ def client():
     return TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def setup_dashboard_api_fixtures(monkeypatch):
+    """Ensure dashboard_api replay endpoints resolve against deterministic test fixtures and clean caches."""
+    import dashboard_api
+    from pathlib import Path
+
+    fixtures_dir = Path(__file__).resolve().parent / "fixtures"
+    fixture_features = fixtures_dir / "fixture_features_v2.csv"
+    fixture_model = fixtures_dir / "fixture_model_b.joblib"
+
+    monkeypatch.setattr(dashboard_api, "FEATURES_PATH", fixture_features)
+    monkeypatch.setattr(dashboard_api, "MODEL_PATH", fixture_model)
+
+    dashboard_api._load_dataset.cache_clear()
+    dashboard_api._load_model.cache_clear()
+    try:
+        yield
+    finally:
+        dashboard_api._load_dataset.cache_clear()
+        dashboard_api._load_model.cache_clear()
+
+
 class TestHealthEndpoint:
     """Tests for /api/health."""
 

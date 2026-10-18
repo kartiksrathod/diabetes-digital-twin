@@ -21,19 +21,32 @@ class TestConfigurationAndPaths:
         assert (PROJECT_ROOT / "digital_twin" / "azure_client.py").exists()
         assert (PROJECT_ROOT / "dashboard" / "index.html").exists()
 
-    def test_model_and_processed_data_files_exist(self):
-        assert (PROJECT_ROOT / "data" / "processed" / "model_b_random_forest.joblib").exists()
-        assert (PROJECT_ROOT / "data" / "processed" / "shanghai_t2dm_features_v2.csv").exists()
+    def test_source_controlled_metrics_and_fixtures_exist(self):
+        """Verifies that all tracked metric files and test fixtures exist in the repository."""
         assert (PROJECT_ROOT / "data" / "processed" / "final_test_results.csv").exists()
         assert (PROJECT_ROOT / "data" / "processed" / "model_b_threshold_results.csv").exists()
+        assert (PROJECT_ROOT / "digital_twin" / "models" / "PatientDigitalTwin.json").exists()
+        assert (PROJECT_ROOT / "tests" / "fixtures" / "fixture_model_b.joblib").exists()
+        assert (PROJECT_ROOT / "tests" / "fixtures" / "fixture_features_v2.csv").exists()
+        assert (PROJECT_ROOT / "tests" / "fixtures" / "fixture_train.csv").exists()
+        assert (PROJECT_ROOT / "tests" / "fixtures" / "fixture_validation.csv").exists()
+        assert (PROJECT_ROOT / "tests" / "fixtures" / "fixture_test.csv").exists()
 
-    def test_patient_splits_exist_and_non_empty(self):
-        train = PROJECT_ROOT / "data" / "processed" / "train.csv"
-        val = PROJECT_ROOT / "data" / "processed" / "validation.csv"
-        test = PROJECT_ROOT / "data" / "processed" / "test.csv"
-        assert train.exists() and train.stat().st_size > 0
-        assert val.exists() and val.stat().st_size > 0
-        assert test.exists() and test.stat().st_size > 0
+    def test_fixture_patient_splits_exist_and_non_empty(self):
+        """Verifies that all fixture split files are present and non-empty."""
+        for split_file in ("fixture_train.csv", "fixture_validation.csv", "fixture_test.csv"):
+            path = PROJECT_ROOT / "tests" / "fixtures" / split_file
+            assert path.exists() and path.stat().st_size > 0
+
+    def test_production_artifacts_when_available(self):
+        """Validates heavy local production model and full datasets only when present."""
+        prod_model = PROJECT_ROOT / "data" / "processed" / "model_b_random_forest.joblib"
+        if not prod_model.exists():
+            pytest.skip("Full production model not present in clean checkout")
+        assert (PROJECT_ROOT / "data" / "processed" / "shanghai_t2dm_features_v2.csv").exists()
+        for split in ("train.csv", "validation.csv", "test.csv"):
+            f = PROJECT_ROOT / "data" / "processed" / split
+            assert f.exists() and f.stat().st_size > 0
 
 
 class TestDeclaredDependencies:

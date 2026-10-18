@@ -42,3 +42,23 @@ def mock_azure_client(mock_twin_payload):
     client.get_digital_twin.return_value = mock_twin_payload
     client.update_digital_twin.return_value = None
     return client
+
+
+@pytest.fixture(autouse=True)
+def reset_dashboard_api_caches():
+    """Ensure dashboard_api loader caches are clean before and after every test."""
+    try:
+        import dashboard_api
+        dashboard_api._load_dataset.cache_clear()
+        dashboard_api._load_model.cache_clear()
+    except Exception:
+        pass
+    try:
+        yield
+    finally:
+        try:
+            import dashboard_api
+            dashboard_api._load_dataset.cache_clear()
+            dashboard_api._load_model.cache_clear()
+        except Exception:
+            pass

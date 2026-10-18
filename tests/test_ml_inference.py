@@ -14,6 +14,8 @@ from sklearn.pipeline import Pipeline
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = PROJECT_ROOT / "data" / "processed" / "model_b_random_forest.joblib"
 FEATURES_V2_PATH = PROJECT_ROOT / "data" / "processed" / "shanghai_t2dm_features_v2.csv"
+FIXTURE_MODEL_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_model_b.joblib"
+FIXTURE_FEATURES_PATH = PROJECT_ROOT / "tests" / "fixtures" / "fixture_features_v2.csv"
 
 # Canonical Model B 40-feature definition
 EXPECTED_40_FEATURES = [
@@ -65,8 +67,20 @@ FINAL_FROZEN_THRESHOLD = 0.57
 class TestModelArtifactsAndContracts:
     """Tests loading of model artifact and feature alignment."""
 
-    def test_model_artifact_exists_and_loads(self):
-        assert MODEL_PATH.exists(), f"Model file missing at {MODEL_PATH}"
+    def test_fixture_model_artifact_exists_and_loads(self):
+        """Always validates the scikit-learn Pipeline architecture and contract in CI."""
+        assert FIXTURE_MODEL_PATH.exists(), f"Fixture model missing at {FIXTURE_MODEL_PATH}"
+        model = joblib.load(FIXTURE_MODEL_PATH)
+        assert isinstance(model, Pipeline), "Model must be a scikit-learn Pipeline"
+        assert "imputer" in model.named_steps, "Pipeline must contain 'imputer' step"
+        assert "model" in model.named_steps, "Pipeline must contain 'model' step"
+        assert hasattr(model, "predict_proba"), "Pipeline must expose predict_proba"
+        assert list(model.classes_) == [0, 1], "Model classes must be [0, 1]"
+
+    def test_production_model_artifact_when_available(self):
+        """Validates the production model weights only when present in the environment."""
+        if not MODEL_PATH.exists():
+            pytest.skip("Production model artifact not present in clean checkout")
         model = joblib.load(MODEL_PATH)
         assert isinstance(model, Pipeline), "Model must be a scikit-learn Pipeline"
         assert "imputer" in model.named_steps, "Pipeline must contain 'imputer' step"
@@ -99,11 +113,13 @@ class TestInferencePipelineBehavior:
 
     @pytest.fixture(scope="class")
     def loaded_model(self):
-        return joblib.load(MODEL_PATH)
+        assert FIXTURE_MODEL_PATH.exists(), f"Fixture model missing at {FIXTURE_MODEL_PATH}"
+        return joblib.load(FIXTURE_MODEL_PATH)
 
     @pytest.fixture(scope="class")
     def sample_features_df(self):
-        df = pd.read_csv(FEATURES_V2_PATH, nrows=10, low_memory=False)
+        assert FIXTURE_FEATURES_PATH.exists(), f"Fixture features missing at {FIXTURE_FEATURES_PATH}"
+        df = pd.read_csv(FIXTURE_FEATURES_PATH, nrows=10, low_memory=False)
         return df
 
     def test_inference_produces_valid_probabilities(self, loaded_model, sample_features_df):
