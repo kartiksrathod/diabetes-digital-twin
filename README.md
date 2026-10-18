@@ -40,7 +40,24 @@
 | 📟 **CGM** (Continuous Glucose Monitor) | A small wearable sensor that measures glucose every few minutes, day and night. |
 | 👤 **Digital Twin** | A virtual "copy" of a person's health data that can be studied on a computer without touching the real patient. |
 | 🤖 **Machine Learning** | Software that learns patterns from past data instead of following hand-written rules. |
+---
 
+## 🎯 Problem Statement
+
+Diabetes management involves understanding how glucose levels change over time and how these changes relate to meals, insulin administration, and clinical information. Analysing glucose readings in isolation may overlook important contextual patterns.
+
+The objective of this project is to develop a research-oriented digital twin prototype that integrates glucose time-series data with available dietary, insulin, and clinical information. The project applies machine learning techniques to analyse patterns and compare classification models using consistent evaluation metrics.
+
+**Key objectives:**
+- Integrate glucose measurements with available contextual and clinical data.
+- Preprocess the data and perform feature engineering.
+- Train and compare Random Forest, XGBoost, and Logistic Regression models.
+- Evaluate model performance using Accuracy, Precision, Recall, F1-score, ROC-AUC, and PR-AUC.
+- Establish a foundation for future personalised glucose analytics and digital twin research.
+
+**Expected outcome:** A reproducible machine learning workflow for exploring glucose-related patterns and evaluating predictive models. The prototype is intended for research and educational purposes, not clinical diagnosis or treatment.
+
+For the complete official challenge requirements, refer to the original Digital Twin Challenge problem statement document, if available.
 ### ❓ Why does it matter?
 
 Glucose doesn't change on its own. A meal, a dose of insulin, or a person's health background can all push it up or down. Looking at glucose numbers **alone** misses that story.
@@ -404,7 +421,27 @@ A starting point for experiments with combined health data and models.
 
 ## 📜 License
 
-No license has been confirmed yet. Before calling the project open source, add a `LICENSE` file (for example MIT or Apache-2.0) to the repository.
+MIT License
+
+Copyright (c) 2026 Team CodeForge
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ---
 
