@@ -1,45 +1,48 @@
 <!DOCTYPE html>
-
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>GlycoTwin — T2D Early Glucose Spike Prediction Research Demo</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<style>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>GlycoTwin — T2D Early Glucose Spike Prediction Research Instrument</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet"/>
+  <style>
     :root {
-      --bg-canvas: #f8faf9;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f3;
-      --border-subtle: #e2e8e5;
-      --border-medium: #cbd5d1;
-      --text-main: #0f172a;
-      --text-muted: #475569;
-      --text-faint: #64748b;
-      
-      --brand-dark: #154338;
-      --brand-primary: #1d6a59;
-      --brand-soft: #eaf2ee;
-      --brand-border: #c2ded4;
+      /* Palette: Warm Paper, Signal Orange, Ink Black, Graphite Rules */
+      --bg-canvas: #F4EFE5;
+      --bg-surface: #FAF7F2;
+      --bg-card: #FFFFFF;
+      --bg-card-subtle: #F0EAE1;
+      --bg-card-accent: #EAE3D6;
 
-      --risk-high-text: #b91c1c;
-      --risk-high-bg: #fef2f2;
-      --risk-high-border: #fecaca;
-      --risk-high-badge: #dc2626;
+      --graphite-rule: #D9D0C1;
+      --graphite-rule-dark: #C2B8A5;
+      --graphite-rule-light: #EBE5D8;
 
-      --risk-low-text: #047857;
-      --risk-low-bg: #ecfdf5;
-      --risk-low-border: #a7f3d0;
-      --risk-low-badge: #059669;
+      --ink-black: #191919;
+      --ink-dark: #262422;
+      --ink-muted: #57524A;
+      --ink-faint: #7E766B;
 
-      --risk-amber-text: #b45309;
-      --risk-amber-bg: #fffbeb;
-      --risk-amber-border: #fde68a;
+      --signal-orange: #E66B43;
+      --signal-orange-hover: #D65A32;
+      --signal-orange-soft: #FDF1EB;
+      --signal-orange-border: #F7C8B8;
 
-      --threshold-line: #d97706;
+      --alert-high: #D9381E;
+      --alert-high-bg: #FDF3F1;
+      --alert-high-border: #F8CAC2;
+
+      --status-low: #235E43;
+      --status-low-bg: #EFF7F3;
+      --status-low-border: #BEDCD0;
+
+      --threshold-amber: #D97706;
+      --threshold-amber-bg: #FEF8E7;
+      --threshold-amber-border: #FDE68A;
+
+      --font-serif: 'Newsreader', Georgia, serif;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
@@ -52,225 +55,188 @@
 
     body {
       background-color: var(--bg-canvas);
-      color: var(--text-main);
+      color: var(--ink-black);
       font-family: var(--font-sans);
-      font-size: 13.5px;
+      font-size: 13px;
       line-height: 1.5;
       min-height: 100vh;
-      display: flex;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    .app-container {
+    /* Overall Layout Shell */
+    .app-shell {
       display: flex;
+      flex-direction: column;
+      min-height: 100vh;
       width: 100%;
-      min-width: 0;
     }
 
-    /* Sidebar */
-    .sidebar {
-      width: 240px;
-      background: var(--brand-dark);
-      color: #e2e8f0;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-      border-right: 1px solid #0f2d26;
-    }
-
-    .brand-header {
-      padding: 24px 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-mark {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      background: #2dd4bf;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #134e4a;
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    .brand-title {
-      font-size: 17px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #ffffff;
-    }
-
-    .brand-tag {
-      font-size: 10px;
-      background: rgba(45, 212, 191, 0.15);
-      color: #5eead4;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .nav-list {
-      list-style: none;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      flex: 1;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      color: #cbd5e1;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .nav-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
-    }
-
-    .nav-item.active {
-      background: rgba(45, 212, 191, 0.15);
-      color: #5eead4;
-      font-weight: 600;
-    }
-
-    .nav-item svg {
-      width: 16px;
-      height: 16px;
-      stroke-width: 2;
-    }
-
-    .sidebar-footer {
-      padding: 16px 18px;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      font-size: 11px;
-      color: #94a3b8;
-    }
-
-    .sidebar-footer .status-indicator {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #10b981;
-      margin-right: 6px;
-    }
-
-    /* Main Content */
-    .main-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      background: var(--bg-canvas);
-    }
-
-    /* Disclaimer Banner */
+    /* Top Notice Banner: Explicit Research Prototype & Provenance */
     .research-banner {
-      background-color: #fff7ed;
-      border-bottom: 1px solid #ffedd5;
-      padding: 8px 28px;
+      background-color: #EDE5D6;
+      border-bottom: 1px solid var(--graphite-rule);
+      padding: 7px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11.5px;
-      color: #9a3412;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--ink-muted);
     }
 
     .research-banner strong {
-      font-weight: 600;
-      color: #7c2d12;
-      margin-right: 4px;
+      font-weight: 700;
+      color: var(--ink-black);
+      letter-spacing: 0.02em;
     }
 
     .provenance-tag {
-      background: #f1f5f9;
-      color: #475569;
+      background: #FFFFFF;
+      color: var(--ink-dark);
       padding: 3px 8px;
-      border-radius: 4px;
+      border-radius: 3px;
       font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 500;
-      border: 1px solid #e2e8f0;
+      font-size: 10.5px;
+      font-weight: 600;
+      border: 1px solid var(--graphite-rule);
       display: inline-flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
+      letter-spacing: 0.04em;
     }
 
     .provenance-tag .pulse-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: #0284c7;
+      background: var(--signal-orange);
     }
 
-    /* Top Header */
-    .top-header {
+    /* Unified Editorial Navigation Header */
+    .unified-header {
       background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
-      padding: 12px 28px;
+      border-bottom: 1px solid var(--graphite-rule);
+      padding: 14px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header-main-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
-    .header-metadata {
+    .brand-section {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 14px;
     }
 
-    .meta-item {
+    .brand-symbol {
+      width: 32px;
+      height: 32px;
+      background: var(--ink-black);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 500;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .brand-symbol::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 5px;
+      height: 5px;
+      background: var(--signal-orange);
+      border-radius: 50%;
+    }
+
+    .brand-titles {
       display: flex;
       flex-direction: column;
     }
 
-    .meta-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-faint);
+    .brand-heading {
+      font-family: var(--font-serif);
+      font-size: 20px;
       font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--ink-black);
     }
 
-    .meta-val {
+    .brand-sub {
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 10px;
+      color: var(--ink-faint);
+      letter-spacing: 0.03em;
+    }
+
+    .header-context-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .context-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .context-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+    }
+
+    .context-value {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--ink-black);
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-simulated {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--graphite-rule);
+      color: var(--ink-dark);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 3px;
+      letter-spacing: 0.03em;
     }
 
     .btn-secondary {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-medium);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 12.5px;
-      font-weight: 500;
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      color: var(--ink-black);
+      padding: 6px 13px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 7px;
@@ -279,136 +245,63 @@
     }
 
     .btn-secondary:hover {
-      background: var(--bg-subtle);
-      border-color: var(--text-faint);
+      background: var(--bg-card-subtle);
+      border-color: var(--graphite-rule-dark);
     }
 
-    .badge-simulated {
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      color: #334155;
-      font-size: 10.5px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 4px;
-      letter-spacing: 0.03em;
-    }
-
-    /* Dashboard Body */
-    .content-body {
-      padding: 20px 28px 32px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      max-width: 1540px;
-      width: 100%;
-    }
-
-    /* Elevated Analytics Hub */
-    .analytics-stage-card {
-      background: var(--bg-surface);
-      border: 1px solid #d9e2dd;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 1px 3px 0 rgba(15, 23, 42, 0.03);
-      padding: 16px 20px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .stage-header-bar {
+    /* Sub-nav Jump Links */
+    .header-nav-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #eef2f0;
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 22px;
+      padding-top: 10px;
+      border-top: 1px solid var(--graphite-rule-light);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      overflow-x: auto;
     }
 
-    .stage-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .stage-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: #eaf3f0;
-      color: var(--brand-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Integrated Replay Controller inside Analytics Hub */
-    .replay-controls-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: #f8faf9;
-      padding: 4px 8px;
-      border-radius: 8px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .btn-ctrl {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      padding: 5px 11px;
-      border-radius: 5px;
-      font-size: 11.5px;
-      font-weight: 600;
+    .nav-item {
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      transition: background 0.15s ease;
+      padding: 3px 0;
+      position: relative;
+      text-decoration: none;
+      color: var(--ink-muted);
+      white-space: nowrap;
+      transition: color 0.15s ease;
     }
 
-    .btn-ctrl:hover {
-      background: #eef2f0;
+    .nav-item:hover {
+      color: var(--ink-black);
     }
 
-    .btn-ctrl.primary {
-      background: var(--brand-primary);
-      border-color: var(--brand-dark);
-      color: #ffffff;
+    .nav-item.active {
+      color: var(--ink-black);
+      font-weight: 600;
     }
 
-    .btn-ctrl.primary:hover {
-      background: var(--brand-dark);
+    .nav-item.active::after {
+      content: '';
+      position: absolute;
+      bottom: -11px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--signal-orange);
     }
 
-    .step-slider-container {
+    /* Main Container */
+    .main-container {
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 24px 40px;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 6px;
-    }
-
-    .step-slider {
-      width: 140px;
-      -webkit-appearance: none;
-      height: 5px;
-      border-radius: 3px;
-      background: #cbd5d1;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .step-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background: var(--brand-primary);
-      border: 2px solid #ffffff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-      cursor: pointer;
+      flex-direction: column;
+      gap: 20px;
     }
 
     /* KPI Summary Strip */
@@ -419,9 +312,9 @@
     }
 
     .metric-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
       padding: 12px 14px;
       display: flex;
       flex-direction: column;
@@ -432,88 +325,236 @@
     .metric-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: baseline;
       margin-bottom: 4px;
     }
 
     .metric-title {
-      font-size: 10.5px;
+      font-family: var(--font-mono);
+      font-size: 10px;
       font-weight: 600;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+      color: var(--ink-faint);
     }
 
     .metric-val-group {
       display: flex;
       align-items: baseline;
       gap: 5px;
+      margin: 2px 0;
     }
 
     .metric-value {
-      font-size: 23px;
+      font-family: var(--font-sans);
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: -0.02em;
-      color: var(--text-main);
-      font-family: var(--font-sans);
+      color: var(--ink-black);
+      line-height: 1.15;
     }
 
     .metric-unit {
       font-size: 11.5px;
-      color: var(--text-faint);
+      color: var(--ink-faint);
       font-weight: 500;
     }
 
     .metric-sub {
       font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 3px;
+      color: var(--ink-muted);
+      margin-top: 4px;
       display: flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    /* Risk Badge: deliberate high-contrast alert badge without large solid red block */
+    /* High Risk Accent on Card */
+    .card-highlight-high {
+      border-color: var(--alert-high-border);
+      background: var(--alert-high-bg);
+    }
+
+    /* Risk Badges */
     .badge-risk {
       display: inline-flex;
       align-items: center;
       padding: 2.5px 7px;
-      border-radius: 4px;
+      border-radius: 3px;
+      font-family: var(--font-mono);
       font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 0.03em;
+      font-size: 10px;
+      letter-spacing: 0.04em;
       gap: 4px;
     }
 
     .badge-risk.high {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
+      background: var(--alert-high-bg);
+      color: var(--alert-high);
+      border: 1px solid var(--alert-high-border);
     }
 
     .badge-risk.low {
-      background: #ecfdf5;
-      color: #059669;
-      border: 1px solid #a7f3d0;
+      background: var(--status-low-bg);
+      color: var(--status-low);
+      border: 1px solid var(--status-low-border);
     }
 
-    .card-highlight-high {
-      border-color: #fca5a5;
-      background: #fffcfc;
-    }
-
-    /* Elevated Dual Charts Grid */
-    .charts-grid {
+    /* Workspace 2-Column Split: Telemetry Workspace (64%) vs Twin Rail (36%) */
+    .workspace-split {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.78fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* Editorial Section Header */
+    .section-eyebrow {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--graphite-rule);
+      margin-bottom: 14px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow-left {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink-black);
+      letter-spacing: -0.01em;
+    }
+
+    .section-desc {
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+
+    /* Left Column: Telemetry Workspace Container */
+    .telemetry-column {
+      display: flex;
+      flex-direction: column;
       gap: 16px;
     }
 
+    .telemetry-stage-card {
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Replay Controller Bar */
+    .replay-control-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 8px 12px;
+    }
+
+    .replay-buttons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-ctrl {
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      color: var(--ink-black);
+      padding: 5px 11px;
+      border-radius: 3px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-ctrl:hover:not(:disabled) {
+      background: var(--bg-card-subtle);
+      border-color: var(--graphite-rule-dark);
+    }
+
+    .btn-ctrl.primary {
+      background: var(--signal-orange);
+      border-color: #D65A32;
+      color: #FFFFFF;
+    }
+
+    .btn-ctrl.primary:hover:not(:disabled) {
+      background: var(--signal-orange-hover);
+    }
+
+    .btn-ctrl:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .step-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-slider {
+      width: 140px;
+      -webkit-appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--graphite-rule);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .step-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--signal-orange);
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+
+    .step-slider:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Dual Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
     .chart-panel {
-      background: #ffffff;
-      border: 1px solid #e2e8e5;
-      border-radius: 8px;
-      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
       position: relative;
@@ -523,7 +564,8 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      gap: 8px;
     }
 
     .panel-title-group {
@@ -532,32 +574,33 @@
     }
 
     .panel-title {
-      font-size: 13.5px;
+      font-size: 12.5px;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--ink-black);
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
     }
 
     .panel-subtitle {
-      font-size: 11px;
-      color: var(--text-faint);
+      font-size: 10.5px;
+      color: var(--ink-faint);
       margin-top: 2px;
     }
 
     .chart-legend {
       display: flex;
       align-items: center;
-      gap: 12px;
-      font-size: 11px;
-      color: var(--text-muted);
+      gap: 10px;
+      font-size: 10.5px;
+      color: var(--ink-muted);
+      flex-wrap: wrap;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
     }
 
     .legend-dot {
@@ -586,16 +629,16 @@
     /* Tooltip */
     .chart-tooltip {
       position: absolute;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 7px 11px;
-      border-radius: 6px;
+      background: var(--ink-black);
+      color: #FFFFFF;
+      padding: 6px 10px;
+      border-radius: 4px;
       font-size: 11px;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.12s ease;
       transform: translate(-50%, -100%);
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
       z-index: 30;
       white-space: nowrap;
     }
@@ -608,77 +651,40 @@
       transform: translateX(-50%);
       border-width: 4px 4px 0 4px;
       border-style: solid;
-      border-color: #0f172a transparent transparent transparent;
+      border-color: var(--ink-black) transparent transparent transparent;
     }
 
-    /* Lower Section: 2 Columns (Model Specs/Metrics vs AI Clinician) */
-    .details-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 16px;
-    }
-
-    .model-card, .ai-clinician-card {
+    /* Decision Math Box */
+    .decision-callout {
       background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 16px 18px;
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 8px;
     }
 
-    .spec-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 10px 12px;
-    }
-
-    .spec-item {
+    .decision-header {
       display: flex;
-      flex-direction: column;
-    }
-
-    .spec-label {
-      font-size: 9.5px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      font-weight: 600;
-    }
-
-    .spec-val {
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--text-main);
-      font-family: var(--font-mono);
-    }
-
-    .threshold-callout {
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 11px 14px;
-      background: #fafcfb;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     .threshold-bar-track {
-      height: 7px;
-      background: #e2e8e5;
-      border-radius: 4px;
+      height: 6px;
+      background: var(--graphite-rule);
+      border-radius: 3px;
       position: relative;
-      margin: 6px 0 14px 0;
+      margin: 4px 0 14px 0;
     }
 
     .threshold-bar-fill {
       height: 100%;
-      background: #dc2626;
-      border-radius: 4px;
+      background: var(--alert-high);
+      border-radius: 3px;
       transition: width 0.25s ease, background 0.25s ease;
     }
 
@@ -687,24 +693,76 @@
       top: -3px;
       bottom: -3px;
       width: 2px;
-      background: #d97706;
+      background: var(--threshold-amber);
       z-index: 2;
     }
 
     .threshold-marker::after {
       content: 'Threshold: 0.57';
       position: absolute;
-      top: 12px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 9.5px;
       font-weight: 700;
-      color: #b45309;
+      color: var(--threshold-amber);
       white-space: nowrap;
       font-family: var(--font-mono);
     }
 
-    /* Accordion for Offline Evaluation Metrics */
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .math-cell-label {
+      font-size: 9.5px;
+      color: var(--ink-faint);
+      display: block;
+    }
+
+    /* Model Specifications Panel */
+    .model-spec-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 9px 12px;
+    }
+
+    .spec-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .spec-label {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+    }
+
+    .spec-val {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-black);
+    }
+
     .metrics-accordion-details summary {
       cursor: pointer;
       list-style: none;
@@ -712,12 +770,12 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
-      background: #f8faf9;
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
       font-size: 11.5px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--ink-black);
       user-select: none;
       transition: background 0.15s ease;
     }
@@ -727,41 +785,34 @@
     }
 
     .metrics-accordion-details summary:hover {
-      background: #edf3f0;
+      background: var(--bg-card-subtle);
     }
 
     .metrics-accordion-content {
-      border: 1px solid var(--border-subtle);
+      border: 1px solid var(--graphite-rule);
       border-top: none;
-      border-radius: 0 0 6px 6px;
+      border-radius: 0 0 4px 4px;
       padding: 10px 12px;
-      background: #ffffff;
-      animation: fadeIn 0.2s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+      background: var(--bg-card);
     }
 
     .metrics-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 11.5px;
+      font-size: 11px;
     }
 
     .metrics-table th {
       text-align: left;
       padding: 5px 8px;
-      font-size: 10px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      border-bottom: 1px solid var(--border-subtle);
+      font-size: 9.5px;
+      color: var(--ink-faint);
+      border-bottom: 1px solid var(--graphite-rule);
     }
 
     .metrics-table td {
       padding: 5px 8px;
-      border-bottom: 1px solid #f1f5f3;
+      border-bottom: 1px solid var(--graphite-rule-light);
       font-family: var(--font-mono);
     }
 
@@ -771,104 +822,99 @@
 
     .metric-explainer {
       font-size: 10.5px;
-      color: var(--text-muted);
-      cursor: help;
-      text-decoration: underline dotted;
+      color: var(--ink-muted);
       font-family: var(--font-sans);
     }
 
     .educational-note {
       font-size: 11px;
-      background: #f8fafc;
-      border-left: 3px solid #0284c7;
+      background: var(--bg-surface);
+      border-left: 3px solid var(--signal-orange);
       padding: 8px 11px;
-      color: #334155;
-      border-radius: 0 4px 4px 0;
+      color: var(--ink-dark);
+      border-radius: 0 3px 3px 0;
       line-height: 1.45;
     }
 
-    /* AI Clinician Card */
-    .sample-badge {
-      font-size: 10px;
-      font-weight: 700;
-      background: #f1f5f9;
-      color: #475569;
-      padding: 2px 7px;
+    /* Right Column: Twin Rail */
+    .twin-rail-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rail-card {
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
       border-radius: 4px;
-      border: 1px solid #cbd5e1;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .ai-bubble {
-      background: #fbfdfc;
-      border: 1px solid var(--brand-border);
-      border-radius: 6px;
-      padding: 11px 13px;
-      font-size: 12px;
-      line-height: 1.5;
-      color: #1e293b;
-    }
-
-    .ai-sections {
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 9px;
-    }
-
-    .ai-sec-item {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      padding-bottom: 7px;
-      border-bottom: 1px solid #f1f5f3;
-    }
-
-    .ai-sec-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .ai-sec-title {
-      font-size: 10.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-faint);
-    }
-
-    .ai-sec-content {
-      font-size: 12px;
-      color: var(--text-main);
-    }
-
-    .clinical-guardrail-notice {
-      background: #fef2f2;
-      border: 1px solid #fee2e2;
-      border-radius: 6px;
-      padding: 9px 11px;
-      font-size: 11px;
-      color: #991b1b;
-      display: flex;
-      align-items: flex-start;
-      gap: 7px;
-    }
-
-    /* System Status Ribbon */
-    .system-status-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
 
+    /* Verified Twin DTDL Properties Table */
+    .twin-props-table {
+      width: 100%;
+      font-size: 11.5px;
+      border-collapse: collapse;
+    }
+
+    .twin-props-table tr {
+      border-bottom: 1px solid var(--graphite-rule-light);
+    }
+
+    .twin-props-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .twin-props-table td {
+      padding: 6px 4px;
+    }
+
+    .twin-prop-name {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-faint);
+      width: 38%;
+    }
+
+    .twin-prop-val {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-black);
+    }
+
+    .clinical-guardrail-notice {
+      background: var(--alert-high-bg);
+      border: 1px solid var(--alert-high-border);
+      border-radius: 4px;
+      padding: 9px 11px;
+      font-size: 10.5px;
+      color: var(--alert-high);
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      line-height: 1.4;
+    }
+
+    /* System Status Diagnostics Grid */
+    .system-status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
     .status-tile {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 6px;
-      padding: 9px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--graphite-rule);
+      border-radius: 4px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
 
     .status-info {
@@ -877,36 +923,38 @@
     }
 
     .status-name {
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
-      color: var(--text-main);
+      color: var(--ink-black);
     }
 
     .status-desc {
-      font-size: 10px;
-      color: var(--text-faint);
+      font-size: 9.5px;
+      color: var(--ink-faint);
     }
 
     .status-pill {
-      font-size: 10px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
       font-weight: 600;
-      padding: 2.5px 7px;
-      border-radius: 4px;
+      padding: 2px 6px;
+      border-radius: 3px;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
     }
 
     .status-pill.prototype {
-      background: #f1f5f9;
-      color: #475569;
-      border: 1px solid #e2e8f0;
+      background: var(--bg-surface);
+      color: var(--ink-muted);
+      border: 1px solid var(--graphite-rule);
     }
 
     .status-pill.ready {
-      background: #ecfdf5;
-      color: #065f46;
-      border: 1px solid #a7f3d0;
+      background: var(--status-low-bg);
+      color: var(--status-low);
+      border: 1px solid var(--status-low-border);
     }
 
     .status-pill .dot {
@@ -916,14 +964,15 @@
       background: currentColor;
     }
 
-    @media (max-width: 1280px) {
+    /* Responsive Breakpoints */
+    @media (max-width: 1200px) {
+      .workspace-split {
+        grid-template-columns: 1fr;
+      }
       .summary-grid {
         grid-template-columns: repeat(3, 1fr);
       }
       .charts-grid {
-        grid-template-columns: 1fr;
-      }
-      .details-grid {
         grid-template-columns: 1fr;
       }
       .system-status-grid {
@@ -931,1259 +980,1582 @@
       }
     }
 
-
-    /* Responsive refinements for tablet and mobile demo use */
-    @media (max-width: 980px) {
-      .app-container { display: block; min-width: 0; }
-      .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; align-items: center; }
-      .brand-header { padding: 12px 16px; flex: 1 1 180px; }
-      .nav-list { flex-direction: row; flex: 2 1 360px; flex-wrap: wrap; padding: 8px; }
-      .nav-item { padding: 8px 10px; }
-      .sidebar-footer { display: none; }
-      .main-wrapper { min-width: 0; }
-      .research-banner { gap: 8px; flex-wrap: wrap; padding: 10px 16px; }
-      .top-header { padding: 12px 16px; flex-wrap: wrap; gap: 12px; }
-      .header-metadata { gap: 12px 18px; flex-wrap: wrap; }
-      .content-body { padding: 16px; }
-      .summary-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .charts-grid, .details-grid { grid-template-columns: 1fr; }
-      .system-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .replay-controls-group { flex-wrap: wrap; }
+    @media (max-width: 768px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .header-context-row {
+        gap: 12px;
+      }
+      .spec-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .math-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .replay-control-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .system-status-grid {
+        grid-template-columns: 1fr;
+      }
     }
-    @media (max-width: 620px) {
-      body { display: block; }
-      .brand-header { flex-basis: 100%; }
-      .nav-list { flex-basis: 100%; }
-      .nav-item { flex: 1 1 auto; justify-content: center; }
-      .header-metadata { width: 100%; }
-      .header-actions { flex-wrap: wrap; }
-      .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .system-status-grid { grid-template-columns: 1fr; }
-      .analytics-stage-card { padding: 12px; }
-      .chart-panel { padding: 12px; }
-      .svg-container { height: 200px; }
-      .step-slider { width: 110px; }
-      .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .research-banner .provenance-tag { white-space: normal; }
-    }
-
   </style>
 </head>
 <body>
-<div class="app-container">
-<!-- Sidebar -->
-<aside class="sidebar">
-<div class="brand-header">
-<div class="brand-mark">G</div>
-<div>
-<div class="brand-title">GlycoTwin</div>
-<span class="brand-tag">T2D Research Twin</span>
-</div>
-</div>
-<ul class="nav-list">
-<li class="nav-item active" data-target="overview-section">
-<svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><rect height="7" width="7" x="3" y="3"></rect><rect height="7" width="7" x="14" y="3"></rect><rect height="7" width="7" x="14" y="14"></rect><rect height="7" width="7" x="3" y="14"></rect></svg>
-          Overview
-        </li>
-<li class="nav-item" data-target="timeline-section">
-<svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-          Glucose Timeline
-        </li>
-<li class="nav-item" data-target="model-section">
-<svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
-          Model Insights
-        </li>
-<li class="nav-item" data-target="status-section">
-<svg fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" x2="12" y1="22.08" y2="12"></line></svg>
-          Twin &amp; System Status
-        </li>
-</ul>
-<div class="sidebar-footer">
-<div><span class="status-indicator" style="background:#94a3b8"></span>MCP tools available in Antigravity</div>
-<div style="margin-top: 4px; font-size: 10px; color: #64748b;">ShanghaiT2DM Cohort Study</div>
-</div>
-</aside>
-<!-- Main Workspace -->
-<main class="main-wrapper">
-<!-- Mandatory Research Prototype Disclaimer Banner -->
-<div class="research-banner">
-<div>
-<strong>PROTOTYPE NOTICE:</strong> Research &amp; demonstration prototype only — not a clinically validated medical device. Continuous Glucose Monitor (CGM) readings are historical ShanghaiT2DM records replayed as simulated inputs. Never used for diagnosis or active treatment.
+<div class="app-shell">
+
+  <!-- Mandatory Research Prototype Disclaimer Banner -->
+  <aside class="research-banner" aria-label="Research Prototype Notice">
+    <div>
+      <strong>PROTOTYPE NOTICE:</strong> Research &amp; demonstration prototype only — not a clinically validated medical device. Continuous Glucose Monitor (CGM) readings are historical ShanghaiT2DM records replayed as simulated inputs. Never used for diagnosis or active treatment.
+    </div>
+    <div class="provenance-tag">
+      <span class="pulse-dot"></span>
+      SIMULATED HISTORICAL CGM REPLAY
+    </div>
+  </aside>
+
+  <!-- Unified Editorial Header -->
+  <header class="unified-header">
+    <div class="header-main-row">
+      <div class="brand-section">
+        <div class="brand-symbol">G</div>
+        <div class="brand-titles">
+          <h1 class="brand-heading">GlycoTwin</h1>
+          <span class="brand-sub">Type 2 diabetes glucose telemetry digital twin · Research instrument</span>
         </div>
-<div class="provenance-tag">
-<span class="pulse-dot"></span>
-          SIMULATED HISTORICAL CGM REPLAY
+      </div>
+
+      <div class="header-context-row">
+        <div class="context-item">
+          <span class="context-label">Subject</span>
+          <span class="context-value">ID: 2001 (Type 2 Diabetes)</span>
         </div>
-</div>
-<!-- Top Header with Patient & Twin Context -->
-<header class="top-header">
-<div class="header-metadata">
-<div class="meta-item">
-<span class="meta-label">Subject / Patient</span>
-<span class="meta-val">ID: 2001 (Type 2 Diabetes)</span>
-</div>
-<div class="meta-item">
-<span class="meta-label">Azure Digital Twin</span>
-<span class="meta-val">Twin ID: P001</span>
-</div>
-<div class="meta-item">
-<span class="meta-label">Replay Session</span>
-<span class="meta-val" id="header-session">2001_0_20201102</span>
-</div>
-<div class="meta-item">
-<span class="meta-label">Source / Twin Update Time</span>
-<span class="meta-val" id="header-timestamp">2020-11-02 13:55 (dataset time)</span>
-</div>
-</div>
-<div class="header-actions">
-<span class="badge-simulated" id="mode-badge">LOCAL FIXTURE REPLAY</span>
-<button class="btn-secondary" id="btn-refresh" title="Simulated Refresh — polls mock adapter">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path></svg>
-            Refresh Twin State
-          </button>
-</div>
-</header>
-<!-- Dashboard Body -->
-<div class="content-body">
-<!-- Current State Summary KPI Cards -->
-<div class="summary-grid" id="overview-section">
-<!-- Card 1: Glucose -->
-<div class="metric-card">
-<div class="metric-header">
-<span class="metric-title">Current Glucose</span>
-<span style="font-size: 10.5px; color: var(--text-faint); font-family: var(--font-mono);">CGM</span>
-</div>
-<div class="metric-val-group">
-<span class="metric-value" id="card-glucose">163.8</span>
-<span class="metric-unit">mg/dL</span>
-</div>
-<div class="metric-sub">
-<span>30m Delta:</span>
-<strong id="card-delta" style="font-family: var(--font-mono); color: #dc2626;">+21.6 mg/dL</strong>
-</div>
-</div>
-<!-- Card 2: Trend -->
-<div class="metric-card">
-<div class="metric-header">
-<span class="metric-title">Glucose Trajectory</span>
-<svg fill="none" height="15" stroke="#dc2626" stroke-width="2" viewbox="0 0 24 24" width="15"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
-</div>
-<div class="metric-val-group">
-<span class="metric-value" id="card-trend" style="font-size: 21px;">Rising</span>
-</div>
-<div class="metric-sub">
-<span>Observable sensor rate</span>
-</div>
-</div>
-<!-- Card 3: Model Score -->
-<div class="metric-card">
-<div class="metric-header">
-<span class="metric-title">Model Risk Score</span>
-<span style="font-size: 10.5px; color: var(--text-faint); font-family: var(--font-mono);">Model score</span>
-</div>
-<div class="metric-val-group">
-<span class="metric-value" id="card-risk-score">67.75</span>
-<span class="metric-unit">%</span>
-</div>
-<div class="metric-sub">
-<span>Margin vs Thr:</span>
-<strong id="card-margin" style="font-family: var(--font-mono); color: #dc2626;">+10.75 pp</strong>
-</div>
-</div>
-<!-- Card 4: Risk Classification (Refined high-risk visual elegance) -->
-<div class="metric-card card-highlight-high" id="card-risk-container">
-<div class="metric-header">
-<span class="metric-title">Classification</span>
-<span class="badge-risk high" id="badge-classification">
-<span class="w-1.5 h-1.5 rounded-full bg-red-600 inline-block"></span>
-                HIGH
-              </span>
-</div>
-<div class="metric-val-group">
-<span class="metric-value" id="card-class-text" style="font-size: 21px; color: #dc2626;">HIGH RISK</span>
-</div>
-<div class="metric-sub">
-<span>Decision rule: score ≥ 0.57</span>
-</div>
-</div>
-<!-- Card 5: Predicted Event -->
-<div class="metric-card">
-<div class="metric-header">
-<span class="metric-title">Predicted Event</span>
-<svg fill="none" height="15" stroke="#d97706" stroke-width="2" viewbox="0 0 24 24" width="15"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
-</div>
-<div class="metric-val-group">
-<span class="metric-value" id="card-predicted-event" style="font-size: 19px;">Glucose Spike</span>
-</div>
-<div class="metric-sub">
-<span>Predicted excursion</span>
-</div>
-</div>
-<!-- Card 6: Horizon -->
-<div class="metric-card">
-<div class="metric-header">
-<span class="metric-title">Prediction Horizon</span>
-<svg fill="none" height="15" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="15"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-</div>
-<div class="metric-val-group">
-<span class="metric-value">2.0</span>
-<span class="metric-unit">Hours</span>
-</div>
-<div class="metric-sub">
-<span>Next 120 min window</span>
-</div>
-</div>
-</div>
-<!-- 1. Central Visual Focus: Elevated Dual Timeline Analytics Card Container -->
-<section class="analytics-stage-card" id="timeline-section">
-<!-- Integrated Header & Replay Controls Anchored Directly with Charts -->
-<div class="stage-header-bar">
-<div class="stage-title-wrap">
-<div class="stage-icon">
-<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-</div>
-<div>
-<h2 style="font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em;">Twin Telemetry &amp; Model Risk Analytics</h2>
-<div style="font-size: 11px; color: #64748b;">Historical replay session (11:40 — 13:55); browser controls are fixture-only</div>
-</div>
-</div>
-<!-- Replay Demo Controls anchored right inside the analytics header -->
-<div class="replay-controls-group">
-<button class="btn-ctrl" id="btn-prev" title="Step Back">
-<svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" x2="5" y1="19" y2="5"></line></svg>
+        <div class="context-item">
+          <span class="context-label">Digital twin</span>
+          <span class="context-value">Twin ID: P001</span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Replay session</span>
+          <span class="context-value" id="header-session">2001_0_20201102</span>
+        </div>
+        <div class="context-item">
+          <span class="context-label">Source update time</span>
+          <span class="context-value" id="header-timestamp">2020-11-02 13:55 (dataset time)</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="badge-simulated" id="mode-badge">LOCAL FIXTURE REPLAY</span>
+        <button class="btn-secondary" id="btn-refresh" title="Refresh Twin State">
+          <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path>
+          </svg>
+          Refresh Twin State
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-navigation Jump Links (Natural, unnumbered labels) -->
+    <nav class="header-nav-bar" aria-label="Section Navigation">
+      <a class="nav-item active" data-target="overview-section" href="#overview-section">
+        Glucose telemetry
+      </a>
+      <a class="nav-item" data-target="twin-section" href="#twin-section">
+        Patient digital twin
+      </a>
+      <a class="nav-item" data-target="model-section" href="#model-section">
+        Model specifications
+      </a>
+      <a class="nav-item" data-target="status-section" href="#status-section">
+        System diagnostics
+      </a>
+    </nav>
+  </header>
+
+  <!-- Main Content Workspace -->
+  <main class="main-container">
+
+    <!-- KPI Summary Strip -->
+    <section class="summary-grid" id="overview-section" aria-label="Telemetry Summary KPIs">
+      <!-- Card 1: Glucose -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Current glucose</span>
+          <span style="font-size: 10px; color: var(--ink-faint); font-family: var(--font-mono);">CGM</span>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="card-glucose">163.8</span>
+          <span class="metric-unit">mg/dL</span>
+        </div>
+        <div class="metric-sub">
+          <span>30m Delta:</span>
+          <strong id="card-delta" style="font-family: var(--font-mono); color: var(--alert-high);">+21.6 mg/dL</strong>
+        </div>
+      </div>
+
+      <!-- Card 2: Trend -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Sensor trajectory</span>
+          <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+            <polyline points="17 6 23 6 23 12"></polyline>
+          </svg>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="card-trend" style="font-size: 21px;">Rising</span>
+        </div>
+        <div class="metric-sub">
+          <span>Observable sensor rate</span>
+        </div>
+      </div>
+
+      <!-- Card 3: Model Risk Score -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Model risk score</span>
+          <span style="font-size: 10px; color: var(--ink-faint); font-family: var(--font-mono);">RF-40</span>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="card-risk-score">67.75</span>
+          <span class="metric-unit">%</span>
+        </div>
+        <div class="metric-sub">
+          <span>Margin vs threshold:</span>
+          <strong id="card-margin" style="font-family: var(--font-mono); color: var(--alert-high);">+10.75 pp</strong>
+        </div>
+      </div>
+
+      <!-- Card 4: Classification -->
+      <div class="metric-card card-highlight-high" id="card-risk-container">
+        <div class="metric-header">
+          <span class="metric-title">Classification</span>
+          <span class="badge-risk high" id="badge-classification">
+            <span style="width: 5px; height: 5px; border-radius: 50%; background: currentColor;"></span>
+            HIGH
+          </span>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="card-class-text" style="font-size: 21px; color: var(--alert-high);">HIGH RISK</span>
+        </div>
+        <div class="metric-sub">
+          <span>Decision rule: score ≥ 0.57</span>
+        </div>
+      </div>
+
+      <!-- Card 5: Predicted Event -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Predicted event</span>
+          <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" x2="12" y1="8" y2="12"></line>
+            <line x1="12" x2="12.01" y1="16" y2="16"></line>
+          </svg>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="card-predicted-event" style="font-size: 19px;">Glucose Spike</span>
+        </div>
+        <div class="metric-sub">
+          <span>2-Hour horizon excursion</span>
+        </div>
+      </div>
+
+      <!-- Card 6: Replay Status -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <span class="metric-title">Replay horizon</span>
+          <span style="font-size: 10px; color: var(--ink-faint); font-family: var(--font-mono);">2.0h</span>
+        </div>
+        <div class="metric-val-group">
+          <span class="metric-value" id="step-counter" style="font-size: 21px;">10 / 10</span>
+        </div>
+        <div class="metric-sub">
+          <span>Reading: <strong id="replay-time-label" style="font-family: var(--font-mono); color: var(--ink-black);">13:55</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2-Column Balanced Density Split -->
+    <div class="workspace-split">
+
+      <!-- LEFT COLUMN: Telemetry Workspace & Analytics (~64%) -->
+      <div class="telemetry-column">
+
+        <!-- Telemetry & Replay Section -->
+        <section class="telemetry-stage-card" id="timeline-section">
+          <div class="section-eyebrow">
+            <div class="eyebrow-left">
+              <h2 class="section-title">Glucose telemetry</h2>
+            </div>
+            <span class="section-desc">Historical CGM stream replayed through ShanghaiT2DM feature pipeline</span>
+          </div>
+
+          <!-- Replay Demo Controls -->
+          <div class="replay-control-bar">
+            <div class="replay-buttons">
+              <button class="btn-ctrl" id="btn-prev" title="Step Back">
+                <svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12">
+                  <polygon points="19 20 9 12 19 4 19 20"></polygon>
+                  <line x1="5" x2="5" y1="19" y2="5"></line>
+                </svg>
                 Step
               </button>
-<button class="btn-ctrl primary" id="btn-play">
-<svg fill="currentColor" height="12" id="play-icon" viewbox="0 0 24 24" width="12"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-<span id="play-text">Auto Replay</span>
-</button>
-<button class="btn-ctrl" id="btn-next" title="Step Forward">
+              <button class="btn-ctrl primary" id="btn-play">
+                <svg fill="currentColor" height="12" id="play-icon" viewbox="0 0 24 24" width="12">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span id="play-text">Auto Replay</span>
+              </button>
+              <button class="btn-ctrl" id="btn-next" title="Step Forward">
                 Step
-                <svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" x2="19" y1="5" y2="19"></line></svg>
-</button>
-<button class="btn-ctrl" id="btn-reset" title="Reset to Initial Reading">Reset</button>
-<div class="step-slider-container">
-<input class="step-slider" id="step-slider" max="9" min="0" step="1" title="Drag timeline index" type="range" value="9"/>
-<span id="step-counter" style="font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--text-main);">10 / 10</span>
-</div>
-<div style="font-size: 11px; padding-left: 6px; border-left: 1px solid var(--border-subtle); color: var(--text-muted);">
-                Reading: <strong id="replay-time-label" style="font-family: var(--font-mono); color: var(--brand-dark);">13:55</strong>
-</div>
-</div>
-</div>
-<!-- Dual Elevated Charts Side-by-Side -->
-<div class="charts-grid">
-<!-- Left Chart: CGM Glucose Trajectory -->
-<div class="chart-panel">
-<div class="panel-header">
-<div class="panel-title-group">
-<span class="panel-title">
-<svg fill="none" height="15" stroke="#1d6a59" stroke-width="2" viewbox="0 0 24 24" width="15"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                    Replayed CGM Glucose Trajectory
-                  </span>
-<span class="panel-subtitle">10 Historical readings (ShanghaiT2DM Patient 2001, Session 2001_0_20201102)</span>
-</div>
-<div class="chart-legend">
-<div class="legend-item">
-<span class="legend-line" style="background: #1d6a59;"></span>
-<span>Below 120 (visual guide)</span>
-</div>
-<div class="legend-item">
-<span class="legend-line" style="background: #dc2626;"></span>
-<span>At/above 120 (visual guide)</span>
-</div>
-</div>
-</div>
-<div class="svg-container" id="glucose-chart-container">
-<svg class="interactive-chart" id="glucose-svg" preserveaspectratio="none" viewbox="0 0 600 220"></svg>
-<div class="chart-tooltip" id="glucose-tooltip"></div>
-</div>
-<div style="margin-top: 8px; font-size: 10.5px; color: var(--text-faint); display: flex; justify-content: space-between;">
-<span>Source: ShanghaiT2DM continuous glucose sensor</span>
-<span>Values in mg/dL • Sampling interval: 15 min</span>
-</div>
-</div>
-<!-- Right Chart: Model Risk vs 0.57 Threshold -->
-<div class="chart-panel">
-<div class="panel-header">
-<div class="panel-title-group">
-<span class="panel-title">
-<svg fill="none" height="15" stroke="#d97706" stroke-width="2" viewbox="0 0 24 24" width="15"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
-                    Model Spike Risk vs. Frozen 0.57 Threshold
-                  </span>
-<span class="panel-subtitle">Independent model-score axis [0.0 - 1.0] • fixed decision threshold</span>
-</div>
-<div class="chart-legend">
-<div class="legend-item">
-<span class="legend-line" style="background: var(--threshold-line); border-top: 2px dashed var(--threshold-line);"></span>
-<span>Threshold (0.57)</span>
-</div>
-<div class="legend-item">
-<span class="legend-dot" style="background: #059669;"></span>
-<span>LOW (&lt;0.57)</span>
-</div>
-<div class="legend-item">
-<span class="legend-dot" style="background: #dc2626;"></span>
-<span>HIGH (≥0.57)</span>
-</div>
-</div>
-</div>
-<div class="svg-container" id="risk-chart-container">
-<svg class="interactive-chart" id="risk-svg" preserveaspectratio="none" viewbox="0 0 600 220"></svg>
-<div class="chart-tooltip" id="risk-tooltip"></div>
-</div>
-<div style="margin-top: 8px; font-size: 10.5px; color: var(--text-faint); display: flex; justify-content: space-between;">
-<span>Fixed Random Forest classification threshold: 0.5700 (57.0%)</span>
-<span>Scores at or above the dashed threshold classify as HIGH</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Lower Section: Model Specifications vs AI Clinician Summary -->
-<div class="details-grid">
-<!-- Left: Model Card with Compact Expandable Validation Metrics -->
-<div class="model-card" id="model-section">
-<div class="panel-header" style="margin-bottom: 0;">
-<div class="panel-title-group">
-<span class="panel-title">
-<svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                  Predictive Model Card &amp; Verification
-                </span>
-<span class="panel-subtitle">Offline trained Random Forest model specification</span>
-</div>
-<span class="provenance-tag">FROZEN SPEC</span>
-</div>
-<!-- Model spec pill grid -->
-<div class="spec-grid">
-<div class="spec-item">
-<span class="spec-label">Model Architecture</span>
-<span class="spec-val">Random Forest</span>
-</div>
-<div class="spec-item">
-<span class="spec-label">Engineered Features</span>
-<span class="spec-val">40 Features</span>
-</div>
-<div class="spec-item">
-<span class="spec-label">Forecast Horizon</span>
-<span class="spec-val">Next 2 Hours</span>
-</div>
-<div class="spec-item">
-<span class="spec-label">Decision Boundary</span>
-<span class="spec-val">0.57 (57.0%)</span>
-</div>
-</div>
-<!-- Threshold Explanation & Margin Visible at a glance -->
-<div class="threshold-callout">
-<div style="display: flex; justify-content: space-between; align-items: center;">
-<span style="font-weight: 700; font-size: 12px; color: var(--text-main);">Current Replay Decision Math</span>
-<span class="badge-risk high" id="decision-math-badge">SCORE ≥ 0.57 (SPIKE PREDICTED)</span>
-</div>
-<div style="position: relative; padding-top: 8px;">
-<div class="threshold-bar-track">
-<div class="threshold-bar-fill" id="decision-bar-fill" style="width: 67.75%;"></div>
-<div class="threshold-marker" style="left: 57%;"></div>
-</div>
-</div>
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-family: var(--font-mono); font-size: 11px; margin-top: 4px;">
-<div>
-<span style="font-size: 9.5px; color: var(--text-faint); display: block;">MODEL SCORE</span>
-<strong id="math-score">0.6775</strong>
-</div>
-<div>
-<span style="font-size: 9.5px; color: var(--text-faint); display: block;">THRESHOLD</span>
-<span>0.5700</span>
-</div>
-<div>
-<span style="font-size: 9.5px; color: var(--text-faint); display: block;">DELTA / MARGIN</span>
-<strong id="math-delta" style="color: #dc2626;">+0.1075 (+10.75 pp)</strong>
-</div>
-<div>
-<span style="font-size: 9.5px; color: var(--text-faint); display: block;">CLASSIFICATION</span>
-<strong id="math-class" style="color: #dc2626;">HIGH</strong>
-</div>
-</div>
-</div>
-<!-- 4. Compact Expandable Accordion: Offline Evaluation Metrics -->
-<details class="metrics-accordion-details">
-<summary>
-<div class="flex items-center gap-2">
-<svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
-<span>Offline Model Card &amp; Validation Metrics (ShanghaiT2DM Cohort)</span>
-</div>
-<span class="text-xs text-slate-500 font-mono font-normal">Click to Expand/Collapse ▼</span>
-</summary>
-<div class="metrics-accordion-content">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-<span style="font-weight: 600; font-size: 11.5px; color: var(--text-main);">Cohort Evaluation Matrix</span>
-<span style="font-size: 10px; color: var(--text-faint);">Not clinical validation</span>
-</div>
-<table class="metrics-table">
-<thead>
-<tr>
-<th>Metric</th>
-<th>Value</th>
-<th>Clinical Interpretation &amp; Nuance</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="font-weight: 600;">Accuracy</td>
-<td>67.71%</td>
-<td class="metric-explainer" title="Overall correctness over evaluated examples">Overall correctness on the held-out test set</td>
-</tr>
-<tr>
-<td style="font-weight: 600;">Recall (Sensitivity)</td>
-<td>62.94%</td>
-<td class="metric-explainer" title="Ability to identify true spikes early">Recall on held-out test examples; not clinical validation</td>
-</tr>
-<tr>
-<td style="font-weight: 600;">Precision (PPV)</td>
-<td>29.25%</td>
-<td class="metric-explainer" title="Proportion of predicted spikes that are true spikes">About 29% of predicted positives matched positive labels in evaluation</td>
-</tr>
-<tr>
-<td style="font-weight: 600;">F1-Score</td>
-<td>39.93%</td>
-<td>Harmonic mean of precision and recall; recorded offline result</td>
-</tr>
-<tr>
-<td style="font-weight: 600;">ROC-AUC / PR-AUC</td>
-<td>0.7208 / 0.3956</td>
-<td>Recorded offline discrimination metrics; not clinical validation</td>
-</tr>
-</tbody>
-</table>
-</div>
-</details>
-<!-- Educational Nuance Note -->
-<div class="educational-note">
-<strong>Clinical Telemetry Nuance:</strong> CGM sensor trend and model risk classification are independent signals. For instance, at replay timestamp <strong>13:25</strong>, glucose is <em>Rising (+16.2 mg/dL)</em>, yet the model risk classification is <strong>LOW</strong> because its score is <strong>0.5091</strong> (below the 0.57 decision threshold). No feature attributions or causality are implied.
+                <svg fill="none" height="12" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="12">
+                  <polygon points="5 4 15 12 5 20 5 4"></polygon>
+                  <line x1="19" x2="19" y1="5" y2="19"></line>
+                </svg>
+              </button>
+              <button class="btn-ctrl" id="btn-reset" title="Reset to Initial Reading">Reset</button>
             </div>
-</div>
-<!-- Right: AI Clinician Panel -->
-<div class="ai-clinician-card">
-<div class="panel-header" style="margin-bottom: 0;">
-<div class="panel-title-group">
-<span class="panel-title">
-<svg fill="none" height="16" stroke="#154338" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                  AI Clinician Summary
-                </span>
-<span class="panel-subtitle">State-derived explanation; Antigravity agent runs separately through MCP</span>
-</div>
-<span class="sample-badge" id="summary-source-badge">Sample Response</span>
-</div>
-<!-- Agent Generated Natural Language Box -->
-<div class="ai-bubble" id="ai-narrative">
-              “The selected replay row shows glucose at <strong>163.8 mg/dL</strong> with a <strong>Rising</strong> trend. The model score is <strong>67.75%</strong>, above the configured 57% threshold, so the model classifies the next two-hour spike risk as <strong>HIGH</strong>. This is a model prediction, not a confirmed event.”
+
+            <div class="step-slider-container">
+              <input class="step-slider" id="step-slider" max="9" min="0" step="1" title="Drag timeline index" type="range" value="9"/>
             </div>
-<!-- Structured breakdown -->
-<div class="ai-sections">
-<div class="ai-sec-item">
-<span class="ai-sec-title">Observed Digital Twin Telemetry</span>
-<span class="ai-sec-content" id="ai-telemetry">
-                  Historical replay reading: 163.8 mg/dL. 30-minute delta is +21.6 mg/dL. Rate of change categorizes current direction as Rising.
-                </span>
-</div>
-<div class="ai-sec-item">
-<span class="ai-sec-title">Model Prediction</span>
-<span class="ai-sec-content" id="ai-prediction">
-                  The existing Random Forest pipeline reports a model risk score of 0.6775 (67.75%) for the next 2 hours.
-                </span>
-</div>
-<div class="ai-sec-item">
-<span class="ai-sec-title">Risk Interpretation</span>
-<span class="ai-sec-content" id="ai-interpretation">
-                  Score exceeds the frozen classification threshold (0.5700) by +10.75 percentage points, yielding a HIGH classification.
-                </span>
-</div>
-<div class="ai-sec-item">
-<span class="ai-sec-title">Important Uncertainty</span>
-<span class="ai-sec-content">
-                  A LOW classification does not mean zero risk. Model B test precision is 43.45%, indicating that non-spike events may also trigger alerts. The score is a model output and does not establish a confirmed future event.
-                </span>
-</div>
-</div>
-<!-- Clinical Safety Guardrail Notice -->
-<div class="clinical-guardrail-notice">
-<svg fill="none" height="17" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 1px;" viewbox="0 0 24 24" width="17"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
-<div>
-<strong>Safety Guardrail:</strong> This system strictly outputs observational context and model risk probabilities. It does not provide medical diagnosis, insulin dosing calculation, medication advice, or autonomous intervention.
+          </div>
+
+          <!-- Dual Side-by-Side Charts Grid -->
+          <div class="charts-grid">
+            <!-- Left Chart: CGM Glucose Trajectory -->
+            <div class="chart-panel">
+              <div class="panel-header">
+                <div class="panel-title-group">
+                  <span class="panel-title">
+                    <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    CGM glucose trajectory
+                  </span>
+                  <span class="panel-subtitle">ShanghaiT2DM Patient 2001 (Session 2001_0_20201102)</span>
+                </div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <span class="legend-line" style="background: var(--status-low);"></span>
+                    <span>&lt; 120 (guide)</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-line" style="background: var(--alert-high);"></span>
+                    <span>≥ 120 (guide)</span>
+                  </div>
+                </div>
               </div>
+
+              <div class="svg-container" id="glucose-chart-container">
+                <svg class="interactive-chart" id="glucose-svg" preserveaspectratio="none" viewbox="0 0 600 220"></svg>
+                <div class="chart-tooltip" id="glucose-tooltip"></div>
+              </div>
+
+              <div style="margin-top: 6px; font-size: 10px; color: var(--ink-faint); display: flex; justify-content: space-between;">
+                <span>Values in mg/dL • 15 min sampling</span>
+                <span>Cohort spike label definition: ≥ 180 mg/dL</span>
+              </div>
+            </div>
+
+            <!-- Right Chart: Model Risk vs 0.57 Threshold -->
+            <div class="chart-panel">
+              <div class="panel-header">
+                <div class="panel-title-group">
+                  <span class="panel-title">
+                    <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" x2="12" y1="8" y2="12"></line>
+                      <line x1="12" x2="12.01" y1="16" y2="16"></line>
+                    </svg>
+                    Model risk vs. frozen 0.57 threshold
+                  </span>
+                  <span class="panel-subtitle">Independent model-score axis [0.0 - 1.0] • Fixed threshold</span>
+                </div>
+                <div class="chart-legend">
+                  <div class="legend-item">
+                    <span class="legend-line" style="background: var(--threshold-amber); border-top: 2px dashed var(--threshold-amber);"></span>
+                    <span>0.57 threshold</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background: var(--status-low);"></span>
+                    <span>Low risk</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot" style="background: var(--alert-high);"></span>
+                    <span>High risk</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="svg-container" id="risk-chart-container">
+                <svg class="interactive-chart" id="risk-svg" preserveaspectratio="none" viewbox="0 0 600 220"></svg>
+                <div class="chart-tooltip" id="risk-tooltip"></div>
+              </div>
+
+              <div style="margin-top: 6px; font-size: 10px; color: var(--ink-faint); display: flex; justify-content: space-between;">
+                <span>Fixed Random Forest threshold: 0.5700 (57.0%)</span>
+                <span>Scores ≥ 0.57 classify as HIGH</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Decision Boundary Computation Box -->
+          <div class="decision-callout">
+            <div class="decision-header">
+              <span style="font-weight: 700; font-size: 11.5px; color: var(--ink-black);">Decision boundary computation</span>
+              <span class="badge-risk high" id="decision-math-badge">SCORE ≥ 0.57 (SPIKE PREDICTED)</span>
+            </div>
+
+            <div style="position: relative; padding-top: 4px;">
+              <div class="threshold-bar-track">
+                <div class="threshold-bar-fill" id="decision-bar-fill" style="width: 67.75%;"></div>
+                <div class="threshold-marker" style="left: 57%;"></div>
+              </div>
+            </div>
+
+            <div class="math-grid">
+              <div>
+                <span class="math-cell-label">Model score</span>
+                <strong id="math-score">0.6775</strong>
+              </div>
+              <div>
+                <span class="math-cell-label">Frozen threshold</span>
+                <span>0.5700</span>
+              </div>
+              <div>
+                <span class="math-cell-label">Delta / margin</span>
+                <strong id="math-delta" style="color: var(--alert-high);">+0.1075 (+10.75 pp)</strong>
+              </div>
+              <div>
+                <span class="math-cell-label">Classification</span>
+                <strong id="math-class" style="color: var(--alert-high);">HIGH</strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Predictive Model Card & Validation Metrics -->
+        <section class="model-spec-panel" id="model-section">
+          <div class="section-eyebrow" style="margin-bottom: 8px;">
+            <div class="eyebrow-left">
+              <h2 class="section-title">Model specifications &amp; evaluation matrix</h2>
+            </div>
+            <span class="provenance-tag">Frozen specification</span>
+          </div>
+
+          <div class="spec-grid">
+            <div class="spec-item">
+              <span class="spec-label">Model architecture</span>
+              <span class="spec-val">Random Forest</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Engineered features</span>
+              <span class="spec-val">40 Features</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Forecast horizon</span>
+              <span class="spec-val">Next 2 Hours</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Decision boundary</span>
+              <span class="spec-val">0.57 (57.0%)</span>
+            </div>
+          </div>
+
+          <!-- Expandable Evaluation Metrics Accordion -->
+          <details class="metrics-accordion-details">
+            <summary>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14">
+                  <path d="M3 3v18h18"></path>
+                  <path d="M18 17V9"></path>
+                  <path d="M13 17V5"></path>
+                  <path d="M8 17v-3"></path>
+                </svg>
+                <span>Offline model card &amp; validation metrics (ShanghaiT2DM cohort)</span>
+              </div>
+              <span style="font-size: 11px; color: var(--ink-faint); font-family: var(--font-mono);">Click to expand/collapse ▼</span>
+            </summary>
+            <div class="metrics-accordion-content">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-weight: 600; font-size: 11px; color: var(--ink-black);">Cohort evaluation matrix</span>
+                <span style="font-size: 9.5px; color: var(--ink-faint);">Held-out test set · Not clinical validation</span>
+              </div>
+              <table class="metrics-table">
+                <thead>
+                  <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Interpretation &amp; Context</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="font-weight: 600;">Accuracy</td>
+                    <td>67.71%</td>
+                    <td class="metric-explainer">Overall correctness on the held-out test set</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600;">Recall (Sensitivity)</td>
+                    <td>62.94%</td>
+                    <td class="metric-explainer">Recall on held-out test examples; not clinical validation</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600;">Precision (PPV)</td>
+                    <td>43.45%</td>
+                    <td class="metric-explainer">Held-out cohort test precision (Model B evaluation)</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600;">F1-Score</td>
+                    <td>39.93%</td>
+                    <td class="metric-explainer">Harmonic mean of precision and recall; recorded offline result</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: 600;">ROC-AUC / PR-AUC</td>
+                    <td>0.7208 / 0.3956</td>
+                    <td class="metric-explainer">Recorded offline discrimination metrics</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <!-- Educational Nuance Note -->
+          <div class="educational-note">
+            <strong>Clinical telemetry nuance:</strong> CGM sensor trend and model risk classification are independent signals. For instance, at replay timestamp <strong>13:25</strong>, glucose is <em>Rising (+16.2 mg/dL)</em>, yet the model risk classification is <strong>LOW</strong> because its score is <strong>0.5091</strong> (below the 0.57 decision threshold). Model B test precision is 43.45%. No feature attributions or causality are implied.
+          </div>
+        </section>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Patient Digital Twin (~36%) -->
+      <div class="twin-rail-column">
+
+        <!-- Patient Digital Twin Section -->
+        <section class="rail-card" id="twin-section">
+          <div class="section-eyebrow">
+            <div class="eyebrow-left">
+              <h2 class="section-title">Patient digital twin</h2>
+            </div>
+            <span class="section-desc">DTDL interface: P001</span>
+          </div>
+
+          <!-- Verified DTDL Properties (No Fabricated Attributes) -->
+          <table class="twin-props-table">
+            <tbody>
+              <tr>
+                <td class="twin-prop-name">Twin ID</td>
+                <td class="twin-prop-val">P001</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">Patient ID</td>
+                <td class="twin-prop-val">2001 (Cohort ShanghaiT2DM)</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">Baseline age</td>
+                <td class="twin-prop-val">69 years (Cohort 2001 record)</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">Baseline BMI</td>
+                <td class="twin-prop-val">26.54 kg/m² (Cohort 2001 record)</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">Baseline HbA1c</td>
+                <td class="twin-prop-val">57.4 mmol/mol / ~7.4% (Cohort 2001 record)</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">DTDL schema</td>
+                <td class="twin-prop-val" style="font-size: 10px; word-break: break-all;">dtmi:glucosetwin:PatientDigitalTwin;2</td>
+              </tr>
+              <tr>
+                <td class="twin-prop-name">Prediction horizon</td>
+                <td class="twin-prop-val">Next 2 hours (frozen)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Clinical Safety Guardrail Notice -->
+          <div class="clinical-guardrail-notice" style="margin-top: 10px;">
+            <svg fill="none" height="15" stroke="currentColor" stroke-width="2" style="flex-shrink: 0; margin-top: 1px;" viewbox="0 0 24 24" width="15">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" x2="12" y1="8" y2="12"></line>
+              <line x1="12" x2="12.01" y1="16" y2="16"></line>
+            </svg>
+            <div>
+              <strong>Safety Guardrail:</strong> This system strictly outputs observational context and model risk probabilities. It does not provide medical diagnosis, insulin dosing calculation, medication advice, or autonomous intervention.
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+    </div>
+
+    <!-- System Architecture & Interface Status Section -->
+    <section class="rail-card" id="status-section">
+      <div class="section-eyebrow">
+        <div class="eyebrow-left">
+          <h2 class="section-title">System diagnostics</h2>
+        </div>
+        <span class="section-desc">Integration topology and operational status</span>
+      </div>
+
+      <div class="system-status-grid">
+        <div class="status-tile">
+          <div class="status-info">
+            <span class="status-name">Azure Digital Twin</span>
+            <span class="status-desc">Twin ID: P001 (Patient 2001)</span>
+          </div>
+          <span class="status-pill prototype" id="status-azure">
+            <span class="dot"></span>
+            Demo fixture
+          </span>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-info">
+            <span class="status-name">MCP Server Interface</span>
+            <span class="status-desc">Server: diabetes-digital-twin</span>
+          </div>
+          <span class="status-pill prototype" id="status-mcp">
+            <span class="dot"></span>
+            Antigravity-only MCP
+          </span>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-info">
+            <span class="status-name">Antigravity Clinician Agent</span>
+            <span class="status-desc">Agent: diabetes-clinician</span>
+          </div>
+          <span class="status-pill prototype" id="status-agent">
+            <span class="dot"></span>
+            Tested separately
+          </span>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-info">
+            <span class="status-name">Replay Engine</span>
+            <span class="status-desc">ShanghaiT2DM Stream</span>
+          </div>
+          <span class="status-pill prototype" id="status-replay">
+            <span class="dot"></span>
+            10-row fixture
+          </span>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
-</div>
-</div>
-<!-- System & Interface Status Row -->
-<div class="system-status-grid" id="status-section">
-<div class="status-tile">
-<div class="status-info">
-<span class="status-name">Azure Digital Twin</span>
-<span class="status-desc">Twin ID: P001 (Patient 2001)</span>
-</div>
-<span class="status-pill prototype" id="status-azure">
-<span class="dot"></span>
-              Demo fixture
-            </span>
-</div>
-<div class="status-tile">
-<div class="status-info">
-<span class="status-name">MCP Server Interface</span>
-<span class="status-desc">Server: diabetes-digital-twin</span>
-</div>
-<span class="status-pill prototype" id="status-mcp">
-<span class="dot"></span>
-              Antigravity-only MCP
-            </span>
-</div>
-<div class="status-tile">
-<div class="status-info">
-<span class="status-name">Antigravity Clinician Agent</span>
-<span class="status-desc">Agent: diabetes-clinician</span>
-</div>
-<span class="status-pill prototype" id="status-agent">
-<span class="dot"></span>
-              Tested separately
-            </span>
-</div>
-<div class="status-tile">
-<div class="status-info">
-<span class="status-name">Replay Engine</span>
-<span class="status-desc">ShanghaiT2DM Historical Stream</span>
-</div>
-<span class="status-pill prototype" id="status-replay">
-<span class="dot"></span>
-              10-row fixture
-            </span>
-</div>
-</div>
-</div>
-</main>
-</div>
+
 <script>
-    /**
-     * GLYCOTWIN DIGITAL TWIN DEMO DATA ADAPTER LAYER
-     * 
-     * ShanghaiT2DM Cohort Replay Fixture
-     * Frozen Classification Threshold: 0.5700
-     * Prediction Horizon: 2 Hours
-     */
-    const DEMO_DATA = [
-      {time:"11:40", glucose:88.2, delta30m:1.8, risk:0.1811, trend:"Stable", level:"LOW"},
-      {time:"11:55", glucose:84.6, delta30m:-5.4, risk:0.1111, trend:"Stable", level:"LOW"},
-      {time:"12:10", glucose:86.4, delta30m:-1.8, risk:0.1075, trend:"Stable", level:"LOW"},
-      {time:"12:25", glucose:91.8, delta30m:7.2, risk:0.2009, trend:"Stable", level:"LOW"},
-      {time:"12:40", glucose:104.4, delta30m:18.0, risk:0.3558, trend:"Rising", level:"LOW"},
-      {time:"12:55", glucose:126.0, delta30m:34.2, risk:0.6850, trend:"Rising", level:"HIGH"},
-      {time:"13:10", glucose:138.6, delta30m:34.2, risk:0.5937, trend:"Rising", level:"HIGH"},
-      {time:"13:25", glucose:142.2, delta30m:16.2, risk:0.5091, trend:"Rising", level:"LOW"},
-      {time:"13:40", glucose:153.0, delta30m:14.4, risk:0.7003, trend:"Rising", level:"HIGH"},
-      {time:"13:55", glucose:163.8, delta30m:21.6, risk:0.6775, trend:"Rising", level:"HIGH"}
-    ];
+  /**
+   * GLYCOTWIN DIGITAL TWIN DEMO DATA ADAPTER LAYER
+   * 
+   * ShanghaiT2DM Cohort Replay Fixture
+   * Frozen Classification Threshold: 0.5700
+   * Prediction Horizon: 2 Hours
+   */
+  const DEMO_DATA = [
+    {time:"11:40", glucose:88.2, delta30m:1.8, risk:0.1811, trend:"Stable", level:"LOW"},
+    {time:"11:55", glucose:84.6, delta30m:-5.4, risk:0.1111, trend:"Stable", level:"LOW"},
+    {time:"12:10", glucose:86.4, delta30m:-1.8, risk:0.1075, trend:"Stable", level:"LOW"},
+    {time:"12:25", glucose:91.8, delta30m:7.2, risk:0.2009, trend:"Stable", level:"LOW"},
+    {time:"12:40", glucose:104.4, delta30m:18.0, risk:0.3558, trend:"Rising", level:"LOW"},
+    {time:"12:55", glucose:126.0, delta30m:34.2, risk:0.6850, trend:"Rising", level:"HIGH"},
+    {time:"13:10", glucose:138.6, delta30m:34.2, risk:0.5937, trend:"Rising", level:"HIGH"},
+    {time:"13:25", glucose:142.2, delta30m:16.2, risk:0.5091, trend:"Rising", level:"LOW"},
+    {time:"13:40", glucose:153.0, delta30m:14.4, risk:0.7003, trend:"Rising", level:"HIGH"},
+    {time:"13:55", glucose:163.8, delta30m:21.6, risk:0.6775, trend:"Rising", level:"HIGH"}
+  ];
 
-    const THRESHOLD = 0.5700;
-    const API_BASE = "http://127.0.0.1:8000/api";
-    let LIVE_MODE = new URLSearchParams(window.location.search).get("mode") === "live";
-    let REPLAY_DATA = [...DEMO_DATA];
+  const THRESHOLD = 0.5700;
+  const API_BASE = "http://127.0.0.1:8000/api";
+  let LIVE_MODE = new URLSearchParams(window.location.search).get("mode") === "live";
+  let REPLAY_DATA = [...DEMO_DATA];
 
-    async function fetchJson(url, timeoutMs = 10000) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-      try {
-        const response = await fetch(url, {
-          headers: { "Accept": "application/json" },
-          signal: controller.signal
-        });
-        if (!response.ok) {
-          let detail = `${response.status} ${response.statusText}`;
-          try {
-            const body = await response.json();
-            if (body && body.detail) detail = body.detail;
-          } catch (_) {}
-          throw new Error(detail);
-        }
-        return await response.json();
-      } catch (err) {
-        if (err.name === 'AbortError') {
-          throw new Error(`Request timed out after ${timeoutMs}ms.`);
-        }
-        throw err;
-      } finally {
-        clearTimeout(timeoutId);
+  async function fetchJson(url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const fetchOptions = {
+        headers: { "Accept": "application/json", ...options.headers },
+        signal: controller.signal,
+        ...options
+      };
+      const response = await fetch(url, fetchOptions);
+      if (!response.ok) {
+        let detail = `${response.status} ${response.statusText}`;
+        try {
+          const body = await response.json();
+          if (body && body.detail) detail = body.detail;
+        } catch (_) {}
+        throw new Error(detail);
       }
+      return await response.json();
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Request timed out after ${timeoutMs}ms.`);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
+  }
 
-    // Adapter boundary: demo fixture by default; local FastAPI endpoints with ?mode=live.
-    const DataAdapter = {
-      async getReplayHistory() {
-        if (!LIVE_MODE) return [...DEMO_DATA];
-        const query = new URLSearchParams({
+  // Adapter boundary: demo fixture by default; local FastAPI endpoints with ?mode=live.
+  const DataAdapter = {
+    async getReplayHistory(limit = 20) {
+      if (!LIVE_MODE) return [...DEMO_DATA];
+      const query = new URLSearchParams({
+        patient_id: "2001",
+        session_id: "2001_0_20201102",
+        limit: String(limit)
+      });
+      const payload = await fetchJson(`${API_BASE}/replay-history?${query.toString()}`);
+      if (!payload.success || !Array.isArray(payload.rows) || payload.rows.length < 2) {
+        throw new Error("Replay history endpoint returned no usable rows.");
+      }
+      return payload.rows.map(row => ({
+        time: row.time,
+        timestamp: row.timestamp,
+        glucose: Number(row.glucose),
+        delta30m: Number(row.delta30m),
+        risk: Number(row.risk),
+        trend: row.trend,
+        level: row.level,
+        predicted_event: row.predicted_event
+      }));
+    },
+    async getTwinState(stepIndex) {
+      if (!LIVE_MODE) {
+        const item = REPLAY_DATA[stepIndex] || REPLAY_DATA[REPLAY_DATA.length - 1];
+        return {
+          patientId: "2001",
+          twinId: "P001",
+          session: "2001_0_20201102",
+          timestampDate: "2020-11-02",
+          sourceTimestamp: item.timestamp || null,
+          lastUpdated: null,
+          stepIndex,
+          totalSteps: REPLAY_DATA.length,
+          ...item,
+          predictedEvent: item.predicted_event || (item.level === "HIGH" ? "Glucose spike" : "No glucose spike"),
+          predictionWindow: "Next 2 hours"
+        };
+      }
+
+      const payload = await fetchJson(`${API_BASE}/twin-state/P001`);
+      if (!payload.success) throw new Error("Azure twin state was not returned successfully.");
+
+      const glucose = payload.current_glucose == null ? null : Number(payload.current_glucose);
+      const risk = payload.risk_score == null ? null : Number(payload.risk_score);
+      const sourceTimestamp = payload.source_timestamp || null;
+
+      let matchedIndex = -1;
+      if (sourceTimestamp && Array.isArray(REPLAY_DATA) && REPLAY_DATA.length > 0) {
+        const normSource = String(sourceTimestamp).replace(' ', 'T');
+        matchedIndex = REPLAY_DATA.findIndex(r => {
+          if (r.timestamp && (r.timestamp === normSource || String(r.timestamp).replace(' ', 'T') === normSource)) return true;
+          if (r.time && normSource.includes(r.time)) return true;
+          return false;
+        });
+      }
+
+      return {
+        patientId: payload.patient_id || "Unknown",
+        twinId: payload.twin_id || "P001",
+        session: "Latest Azure twin state",
+        timestampDate: sourceTimestamp ? String(sourceTimestamp).slice(0, 10) : null,
+        sourceTimestamp,
+        lastUpdated: payload.last_updated || null,
+        stepIndex: typeof stepIndex === 'number' && stepIndex >= 0 ? stepIndex : (matchedIndex >= 0 ? matchedIndex : 0),
+        matchedIndex,
+        totalSteps: REPLAY_DATA.length,
+        time: sourceTimestamp ? String(sourceTimestamp).slice(11, 16) : "Latest",
+        glucose,
+        delta30m: payload.delta_30m == null ? null : Number(payload.delta_30m),
+        risk,
+        trend: payload.glucose_trend || "Unknown",
+        level: payload.risk_level || (risk == null ? "UNKNOWN" : (risk >= THRESHOLD ? "HIGH" : "LOW")),
+        predictedEvent: payload.predicted_event || "Not available",
+        predictionWindow: payload.prediction_window || "Next 2 hours",
+        dataProvenance: payload.data_provenance || "Simulated replay of historical CGM data"
+      };
+    },
+    async getReplayStatus() {
+      if (!LIVE_MODE) return null;
+      return fetchJson(`${API_BASE}/replay/status`);
+    },
+    async startReplay(params = {}) {
+      return fetchJson(`${API_BASE}/replay/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           patient_id: "2001",
           session_id: "2001_0_20201102",
-          limit: "10"
-        });
-        const payload = await fetchJson(`${API_BASE}/replay-history?${query.toString()}`);
-        if (!payload.success || !Array.isArray(payload.rows) || payload.rows.length < 2) {
-          throw new Error("Replay history endpoint returned no usable rows.");
-        }
-        return payload.rows.map(row => ({
-          time: row.time,
-          timestamp: row.timestamp,
-          glucose: Number(row.glucose),
-          delta30m: Number(row.delta30m),
-          risk: Number(row.risk),
-          trend: row.trend,
-          level: row.level,
-          predicted_event: row.predicted_event
-        }));
-      },
-      async getTwinState(stepIndex) {
-        if (!LIVE_MODE) {
-          const item = REPLAY_DATA[stepIndex] || REPLAY_DATA[REPLAY_DATA.length - 1];
-          return {
-            patientId: "2001",
-            twinId: "P001",
-            session: "2001_0_20201102",
-            timestampDate: "2020-11-02",
-            sourceTimestamp: item.timestamp || null,
-            lastUpdated: null,
-            stepIndex,
-            totalSteps: REPLAY_DATA.length,
-            ...item,
-            predictedEvent: item.predicted_event || (item.level === "HIGH" ? "Glucose spike" : "No glucose spike"),
-            predictionWindow: "Next 2 hours"
-          };
-        }
-
-        const payload = await fetchJson(`${API_BASE}/twin-state/P001`);
-        if (!payload.success) throw new Error("Azure twin state was not returned successfully.");
-
-        const glucose = payload.current_glucose == null ? null : Number(payload.current_glucose);
-        const risk = payload.risk_score == null ? null : Number(payload.risk_score);
-        const sourceTimestamp = payload.source_timestamp || null;
-
+          twin_id: "P001",
+          limit: 20,
+          delay_seconds: 2.0,
+          ...params
+        })
+      });
+    },
+    async pauseReplay() {
+      return fetchJson(`${API_BASE}/replay/pause`, {
+        method: "POST"
+      });
+    },
+    async stepReplay() {
+      return fetchJson(`${API_BASE}/replay/step`, {
+        method: "POST"
+      });
+    },
+    async resetReplay() {
+      return fetchJson(`${API_BASE}/replay/reset`, {
+        method: "POST"
+      });
+    },
+    async getSystemStatus() {
+      if (!LIVE_MODE) {
         return {
-          patientId: payload.patient_id || "Unknown",
-          twinId: payload.twin_id || "P001",
-          session: "Latest Azure twin state",
-          timestampDate: sourceTimestamp ? sourceTimestamp.slice(0, 10) : null,
-          sourceTimestamp,
-          lastUpdated: payload.last_updated || null,
-          stepIndex,
-          matchedIndex: -1,
-          totalSteps: REPLAY_DATA.length,
-          time: sourceTimestamp ? sourceTimestamp.slice(11, 16) : "Latest",
-          glucose,
-          delta30m: payload.delta_30m == null ? null : Number(payload.delta_30m),
-          risk,
-          trend: payload.glucose_trend || "Unknown",
-          level: payload.risk_level || (risk == null ? "UNKNOWN" : (risk >= THRESHOLD ? "HIGH" : "LOW")),
-          predictedEvent: payload.predicted_event || "Not available",
-          predictionWindow: payload.prediction_window || "Next 2 hours",
-          dataProvenance: payload.data_provenance || "Simulated replay of historical CGM data"
-        };
-      },
-      async getSystemStatus() {
-        if (!LIVE_MODE) {
-          return {
-            azure_twin_reachable: false,
-            mcp_server: "MCP is used separately by Antigravity; browser is in demo mode",
-            antigravity_agent: "Runs separately in Antigravity",
-            replay_source: "Local demo fixture"
-          };
-        }
-        return fetchJson(`${API_BASE}/system-status`);
-      },
-      async getClinicianSummary(state) {
-        const item = typeof state === "number" ? REPLAY_DATA[state] : state;
-        const score = item.risk == null ? Number.NaN : Number(item.risk);
-        const glucose = item.glucose == null ? Number.NaN : Number(item.glucose);
-        const scoreAvailable = Number.isFinite(score);
-        const glucoseAvailable = Number.isFinite(glucose);
-        const scorePct = scoreAvailable ? (score * 100).toFixed(2) : "Unavailable";
-        const isHigh = item.level === "HIGH";
-        const marginPct = scoreAvailable ? ((score - THRESHOLD) * 100).toFixed(2) : null;
-        const sourcePhrase = LIVE_MODE ? "The latest Azure Digital Twin state" : "The selected historical replay row";
-        const deltaLine = item.delta30m == null
-          ? "The current twin does not expose a 30-minute delta property."
-          : `The 30-minute delta is ${Number(item.delta30m) >= 0 ? "+" : ""}${Number(item.delta30m).toFixed(1)} mg/dL.`;
-        if (!scoreAvailable) {
-          return {
-            narrative: `“${sourcePhrase} shows glucose at <strong>${glucoseAvailable ? glucose.toFixed(1) : "Unavailable"} mg/dL</strong> with a <strong>${item.trend || "unknown"}</strong> trend. The model risk score is unavailable, so a HIGH/LOW classification cannot be confirmed from the current response.”`,
-            telemetry: `${LIVE_MODE ? "Azure Digital Twin state" : "Historical replay row"}: ${glucoseAvailable ? glucose.toFixed(1) : "Unavailable"} mg/dL. ${deltaLine} Direction: ${item.trend || "Unknown"}.`,
-            prediction: "The model score was not returned by the data source.",
-            interpretation: "No risk classification is shown because the score is unavailable. Refresh the twin state or check the dashboard API."
-          };
-        }
-        return {
-          narrative: `“${sourcePhrase} shows glucose at <strong>${glucoseAvailable ? glucose.toFixed(1) : "Unavailable"} mg/dL</strong> with a <strong>${item.trend || "unknown"}</strong> trend. The model score is <strong>${scorePct}%</strong>, ${isHigh ? "at or above" : "below"} the configured 57% threshold, so the model classifies the next two-hour spike risk as <strong>${item.level}</strong>. This is a model prediction, not a confirmed event.”`,
-          telemetry: `${LIVE_MODE ? "Azure Digital Twin state" : "Historical replay row"}: ${glucoseAvailable ? glucose.toFixed(1) : "Unavailable"} mg/dL. ${deltaLine} Direction: ${item.trend || "Unknown"}.`,
-          prediction: `The existing Random Forest pipeline reports a model risk score of ${score.toFixed(4)} (${scorePct}%) for the next 2 hours.`,
-          interpretation: `The score ${isHigh ? "is at or above" : "is below"} the frozen threshold (0.5700), with a margin of ${Number(marginPct) >= 0 ? "+" : ""}${marginPct} percentage points. Classification: ${item.level}.`
+          azure_twin_reachable: false,
+          mcp_server: "MCP is used separately by Antigravity; browser is in demo mode",
+          antigravity_agent: "Runs separately in Antigravity",
+          replay_source: "Local demo fixture"
         };
       }
-    };
+      return fetchJson(`${API_BASE}/system-status`);
+    }
+  };
 
-    // State management
-    let currentStep = 9; // default to latest reading 13:55
-    let isPlaying = false;
-    let playInterval = null;
+  // State management
+  let currentStep = 9; // default to latest reading 13:55
+  let isPlaying = false;
+  let playInterval = null;
 
-    // DOM Elements
-    const slider = document.getElementById('step-slider');
-    const stepCounter = document.getElementById('step-counter');
-    const replayTimeLabel = document.getElementById('replay-time-label');
-    const headerTimestamp = document.getElementById('header-timestamp');
-    const btnPlay = document.getElementById('btn-play');
-    const playText = document.getElementById('play-text');
-    const playIcon = document.getElementById('play-icon');
-    const btnPrev = document.getElementById('btn-prev');
-    const btnNext = document.getElementById('btn-next');
-    const btnReset = document.getElementById('btn-reset');
-    const btnRefresh = document.getElementById('btn-refresh');
-    const modeBadge = document.getElementById('mode-badge');
-    const headerSession = document.getElementById('header-session');
-    const cardPredictedEvent = document.getElementById('card-predicted-event');
-    const statusAzure = document.getElementById('status-azure');
-    const statusMcp = document.getElementById('status-mcp');
-    const statusAgent = document.getElementById('status-agent');
-    const statusReplay = document.getElementById('status-replay');
-    const summarySourceBadge = document.getElementById('summary-source-badge');
+  // DOM Elements
+  const slider = document.getElementById('step-slider');
+  const stepCounter = document.getElementById('step-counter');
+  const replayTimeLabel = document.getElementById('replay-time-label');
+  const headerTimestamp = document.getElementById('header-timestamp');
+  const btnPlay = document.getElementById('btn-play');
+  const playText = document.getElementById('play-text');
+  const playIcon = document.getElementById('play-icon');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const btnReset = document.getElementById('btn-reset');
+  const btnRefresh = document.getElementById('btn-refresh');
+  const modeBadge = document.getElementById('mode-badge');
+  const headerSession = document.getElementById('header-session');
+  const cardPredictedEvent = document.getElementById('card-predicted-event');
+  const statusAzure = document.getElementById('status-azure');
+  const statusMcp = document.getElementById('status-mcp');
+  const statusAgent = document.getElementById('status-agent');
+  const statusReplay = document.getElementById('status-replay');
 
-    // Cards
-    const cardGlucose = document.getElementById('card-glucose');
-    const cardDelta = document.getElementById('card-delta');
-    const cardTrend = document.getElementById('card-trend');
-    const cardRiskScore = document.getElementById('card-risk-score');
-    const cardMargin = document.getElementById('card-margin');
-    const cardRiskContainer = document.getElementById('card-risk-container');
-    const badgeClassification = document.getElementById('badge-classification');
-    const cardClassText = document.getElementById('card-class-text');
+  // KPI Cards
+  const cardGlucose = document.getElementById('card-glucose');
+  const cardDelta = document.getElementById('card-delta');
+  const cardTrend = document.getElementById('card-trend');
+  const cardRiskScore = document.getElementById('card-risk-score');
+  const cardMargin = document.getElementById('card-margin');
+  const cardRiskContainer = document.getElementById('card-risk-container');
+  const badgeClassification = document.getElementById('badge-classification');
+  const cardClassText = document.getElementById('card-class-text');
 
-    // Model Math
-    const decisionMathBadge = document.getElementById('decision-math-badge');
-    const decisionBarFill = document.getElementById('decision-bar-fill');
-    const mathScore = document.getElementById('math-score');
-    const mathDelta = document.getElementById('math-delta');
-    const mathClass = document.getElementById('math-class');
+  // Model Math
+  const decisionMathBadge = document.getElementById('decision-math-badge');
+  const decisionBarFill = document.getElementById('decision-bar-fill');
+  const mathScore = document.getElementById('math-score');
+  const mathDelta = document.getElementById('math-delta');
+  const mathClass = document.getElementById('math-class');
 
-    // AI Clinician
-    const aiNarrative = document.getElementById('ai-narrative');
-    const aiTelemetry = document.getElementById('ai-telemetry');
-    const aiPrediction = document.getElementById('ai-prediction');
-    const aiInterpretation = document.getElementById('ai-interpretation');
+  // SVG Chart Containers
+  const glucoseSvg = document.getElementById('glucose-svg');
+  const riskSvg = document.getElementById('risk-svg');
+  const glucoseTooltip = document.getElementById('glucose-tooltip');
+  const riskTooltip = document.getElementById('risk-tooltip');
 
-    // SVG Chart Containers
-    const glucoseSvg = document.getElementById('glucose-svg');
-    const riskSvg = document.getElementById('risk-svg');
-    const glucoseTooltip = document.getElementById('glucose-tooltip');
-    const riskTooltip = document.getElementById('risk-tooltip');
+  /**
+   * Render SVG Charts with crisp gridlines & synced hover scrubbers
+   */
+  function renderCharts() {
+    renderGlucoseChart();
+    renderRiskChart();
+  }
 
-    /**
-     * Render SVG Charts with crisp gridlines & synced hover scrubbers
-     */
-    function renderCharts() {
-      renderGlucoseChart();
-      renderRiskChart();
+  function renderGlucoseChart() {
+    const width = 600;
+    const height = 220;
+    const padLeft = 46;
+    const padRight = 30;
+    const padTop = 20;
+    const padBottom = 34;
+
+    const minVal = 70;
+    const maxVal = 180;
+
+    const plotW = width - padLeft - padRight;
+    const plotH = height - padTop - padBottom;
+
+    const getX = (i) => padLeft + (i / (REPLAY_DATA.length - 1)) * plotW;
+    const getY = (val) => padTop + plotH - ((val - minVal) / (maxVal - minVal)) * plotH;
+
+    let svgHtml = '';
+
+    // Grid lines (Graphite Rules)
+    const gridTicks = [80, 110, 140, 170];
+    gridTicks.forEach(tick => {
+      const y = getY(tick);
+      svgHtml += `<line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}" stroke="#D9D0C1" stroke-dasharray="2 3" stroke-width="0.8" />`;
+      svgHtml += `<text x="${padLeft - 8}" y="${y + 3.5}" text-anchor="end" font-size="9.5" font-family="'JetBrains Mono', monospace" fill="#7E766B">${tick}</text>`;
+    });
+
+    // Reference band below 120 mg/dL (visual guide)
+    const yTargetLow = getY(70);
+    const yTargetHigh = getY(120);
+    svgHtml += `<rect x="${padLeft}" y="${yTargetHigh}" width="${plotW}" height="${yTargetLow - yTargetHigh}" fill="#EFF7F3" opacity="0.65" />`;
+    svgHtml += `<line x1="${padLeft}" y1="${yTargetHigh}" x2="${width - padRight}" y2="${yTargetHigh}" stroke="#235E43" stroke-width="1.2" stroke-dasharray="4 2" opacity="0.75" />`;
+    svgHtml += `<text x="${width - padRight - 6}" y="${yTargetHigh + 13}" font-size="9" font-family="'Inter', sans-serif" fill="#235E43" text-anchor="end" font-weight="600">Visual guide: 120 mg/dL</text>`;
+
+    // Line segments with color distinction (rising excursion vs normal)
+    for (let i = 0; i < REPLAY_DATA.length - 1; i++) {
+      const p1 = REPLAY_DATA[i];
+      const p2 = REPLAY_DATA[i+1];
+      const x1 = getX(i);
+      const y1 = getY(p1.glucose);
+      const x2 = getX(i+1);
+      const y2 = getY(p2.glucose);
+
+      const isExcursion = p2.glucose >= 120 || p1.glucose >= 120;
+      const color = isExcursion ? '#D9381E' : '#235E43';
+      const strokeWidth = (i+1 <= currentStep) ? 2.5 : 1.2;
+      const opacity = (i+1 <= currentStep) ? 1.0 : 0.25;
+
+      svgHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="${opacity}" />`;
     }
 
-    function renderGlucoseChart() {
-      const width = 600;
-      const height = 220;
-      const padLeft = 46;
-      const padRight = 30;
-      const padTop = 20;
-      const padBottom = 34;
+    // Synchronized Scrubber Line at current step
+    const curX = getX(currentStep);
+    svgHtml += `<line x1="${curX}" y1="${padTop}" x2="${curX}" y2="${padTop + plotH}" stroke="#191919" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.5" />`;
 
-      const minVal = 70;
-      const maxVal = 180;
+    // Points and X-axis labels
+    REPLAY_DATA.forEach((d, i) => {
+      const x = getX(i);
+      const y = getY(d.glucose);
+      const isCurrent = (i === currentStep);
+      const isPastOrCurrent = (i <= currentStep);
 
-      const plotW = width - padLeft - padRight;
-      const plotH = height - padTop - padBottom;
+      const pointColor = d.glucose >= 120 ? '#D9381E' : '#235E43';
+      const radius = isCurrent ? 6 : 4;
+      const opacity = isPastOrCurrent ? 1.0 : 0.3;
 
-      const getX = (i) => padLeft + (i / (REPLAY_DATA.length - 1)) * plotW;
-      const getY = (val) => padTop + plotH - ((val - minVal) / (maxVal - minVal)) * plotH;
-
-      let svgHtml = '';
-
-      // Grid lines
-      const gridTicks = [80, 110, 140, 170];
-      gridTicks.forEach(tick => {
-        const y = getY(tick);
-        svgHtml += `<line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}" stroke="#e8ecea" stroke-dasharray="2 3" />`;
-        svgHtml += `<text x="${padLeft - 8}" y="${y + 3.5}" text-anchor="end" font-size="9.5" font-family="'JetBrains Mono', monospace" fill="#64748b">${tick}</text>`;
-      });
-
-      // Subtle visual reference band below 120 mg/dL
-      const yTargetLow = getY(70);
-      const yTargetHigh = getY(120);
-      svgHtml += `<rect x="${padLeft}" y="${yTargetHigh}" width="${plotW}" height="${yTargetLow - yTargetHigh}" fill="#e8f5f0" opacity="0.65" />`;
-      svgHtml += `<line x1="${padLeft}" y1="${yTargetHigh}" x2="${width - padRight}" y2="${yTargetHigh}" stroke="#22a06b" stroke-width="1.2" stroke-dasharray="4 2" opacity="0.75" />`;
-      svgHtml += `<text x="${width - padRight - 6}" y="${yTargetHigh + 13}" font-size="9" font-family="'Inter', sans-serif" fill="#047857" text-anchor="end" font-weight="600">Visual reference: 120 mg/dL</text>`;
-
-      // Line segments with color distinction (rising excursion vs normal)
-      for (let i = 0; i < REPLAY_DATA.length - 1; i++) {
-        const p1 = REPLAY_DATA[i];
-        const p2 = REPLAY_DATA[i+1];
-        const x1 = getX(i);
-        const y1 = getY(p1.glucose);
-        const x2 = getX(i+1);
-        const y2 = getY(p2.glucose);
-
-        const isExcursion = p2.glucose >= 120 || p1.glucose >= 120;
-        const color = isExcursion ? '#dc2626' : '#1d6a59';
-        const strokeWidth = (i+1 <= currentStep) ? 2.5 : 1.2;
-        const opacity = (i+1 <= currentStep) ? 1.0 : 0.25;
-
-        svgHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="${opacity}" />`;
+      // Current step indicator halo
+      if (isCurrent) {
+        svgHtml += `<circle cx="${x}" cy="${y}" r="11" fill="${pointColor}" opacity="0.2" class="halo" />`;
       }
 
-      // Synchronized Scrubber Line at current step
-      const curX = getX(currentStep);
-      svgHtml += `<line x1="${curX}" y1="${padTop}" x2="${curX}" y2="${padTop + plotH}" stroke="#0f172a" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.45" />`;
-
-      // Points and X-axis labels
-      REPLAY_DATA.forEach((d, i) => {
-        const x = getX(i);
-        const y = getY(d.glucose);
-        const isCurrent = (i === currentStep);
-        const isPastOrCurrent = (i <= currentStep);
-
-        const pointColor = d.glucose >= 120 ? '#dc2626' : '#1d6a59';
-        const radius = isCurrent ? 6 : 4;
-        const opacity = isPastOrCurrent ? 1.0 : 0.3;
-
-        // Current step indicator halo
-        if (isCurrent) {
-          svgHtml += `<circle cx="${x}" cy="${y}" r="11" fill="${pointColor}" opacity="0.2" class="halo" />`;
-        }
-
-        // Clickable interactive target
-        svgHtml += `
-          <g class="chart-point" data-index="${i}" style="cursor: pointer;">
-            <circle cx="${x}" cy="${y}" r="${radius}" fill="#ffffff" stroke="${pointColor}" stroke-width="2.5" opacity="${opacity}" />
-            <circle cx="${x}" cy="${y}" r="14" fill="transparent" />
-          </g>
-        `;
-
-        // Time label
-        const fontW = isCurrent ? 'bold' : 'normal';
-        const fontColor = isCurrent ? '#0f172a' : '#64748b';
-        svgHtml += `<text x="${x}" y="${height - 12}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono', monospace" font-weight="${fontW}" fill="${fontColor}">${d.time}</text>`;
-      });
-
-      glucoseSvg.innerHTML = svgHtml;
-      attachChartEvents(glucoseSvg, 'glucose');
-    }
-
-    function renderRiskChart() {
-      const width = 600;
-      const height = 220;
-      const padLeft = 46;
-      const padRight = 30;
-      const padTop = 20;
-      const padBottom = 34;
-
-      const minVal = 0.0;
-      const maxVal = 1.0;
-
-      const plotW = width - padLeft - padRight;
-      const plotH = height - padTop - padBottom;
-
-      const getX = (i) => padLeft + (i / (REPLAY_DATA.length - 1)) * plotW;
-      const getY = (val) => padTop + plotH - ((val - minVal) / (maxVal - minVal)) * plotH;
-
-      let svgHtml = '';
-
-      // Grid lines
-      const gridTicks = [0.0, 0.25, 0.50, 0.75, 1.0];
-      gridTicks.forEach(tick => {
-        const y = getY(tick);
-        svgHtml += `<line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}" stroke="#e8ecea" stroke-dasharray="2 3" />`;
-        svgHtml += `<text x="${padLeft - 8}" y="${y + 3.5}" text-anchor="end" font-size="9.5" font-family="'JetBrains Mono', monospace" fill="#64748b">${(tick * 100).toFixed(0)}%</text>`;
-      });
-
-      // Frozen Classification Threshold line (0.57) - prominent styling
-      const yThr = getY(THRESHOLD);
+      // Clickable interactive target
       svgHtml += `
-        <rect x="${padLeft}" y="${padTop}" width="${plotW}" height="${yThr - padTop}" fill="#fef2f2" opacity="0.35" />
-        <line x1="${padLeft}" y1="${yThr}" x2="${width - padRight}" y2="${yThr}" stroke="#d97706" stroke-width="2" stroke-dasharray="4 3" />
-        <rect x="${width - padRight - 120}" y="${yThr - 18}" width="120" height="16" rx="3" fill="#fffbeb" stroke="#fde68a" />
-        <text x="${width - padRight - 60}" y="${yThr - 6.5}" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#b45309" text-anchor="middle">THRESHOLD: 0.57 (57%)</text>
+        <g class="chart-point" data-index="${i}" style="cursor: pointer;">
+          <circle cx="${x}" cy="${y}" r="${radius}" fill="#FFFFFF" stroke="${pointColor}" stroke-width="2.5" opacity="${opacity}" />
+          <circle cx="${x}" cy="${y}" r="14" fill="transparent" />
+        </g>
       `;
 
-      // Line segments
-      for (let i = 0; i < REPLAY_DATA.length - 1; i++) {
-        const p1 = REPLAY_DATA[i];
-        const p2 = REPLAY_DATA[i+1];
-        const x1 = getX(i);
-        const y1 = getY(p1.risk);
-        const x2 = getX(i+1);
-        const y2 = getY(p2.risk);
+      // Time label
+      const fontW = isCurrent ? 'bold' : 'normal';
+      const fontColor = isCurrent ? '#191919' : '#7E766B';
+      svgHtml += `<text x="${x}" y="${height - 12}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono', monospace" font-weight="${fontW}" fill="${fontColor}">${d.time}</text>`;
+    });
 
-        const strokeWidth = (i+1 <= currentStep) ? 2.5 : 1.2;
-        const opacity = (i+1 <= currentStep) ? 1.0 : 0.25;
+    glucoseSvg.innerHTML = svgHtml;
+    attachChartEvents(glucoseSvg, 'glucose');
+  }
 
-        svgHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#334155" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="${opacity}" />`;
+  function renderRiskChart() {
+    const width = 600;
+    const height = 220;
+    const padLeft = 46;
+    const padRight = 30;
+    const padTop = 20;
+    const padBottom = 34;
+
+    const minVal = 0.0;
+    const maxVal = 1.0;
+
+    const plotW = width - padLeft - padRight;
+    const plotH = height - padTop - padBottom;
+
+    const getX = (i) => padLeft + (i / (REPLAY_DATA.length - 1)) * plotW;
+    const getY = (val) => padTop + plotH - ((val - minVal) / (maxVal - minVal)) * plotH;
+
+    let svgHtml = '';
+
+    // Grid lines (Graphite Rules)
+    const gridTicks = [0.0, 0.25, 0.50, 0.75, 1.0];
+    gridTicks.forEach(tick => {
+      const y = getY(tick);
+      svgHtml += `<line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}" stroke="#D9D0C1" stroke-dasharray="2 3" stroke-width="0.8" />`;
+      svgHtml += `<text x="${padLeft - 8}" y="${y + 3.5}" text-anchor="end" font-size="9.5" font-family="'JetBrains Mono', monospace" fill="#7E766B">${(tick * 100).toFixed(0)}%</text>`;
+    });
+
+    // Frozen Classification Threshold line (0.57) - prominent amber styling
+    const yThr = getY(THRESHOLD);
+    svgHtml += `
+      <rect x="${padLeft}" y="${padTop}" width="${plotW}" height="${yThr - padTop}" fill="#FDF3F1" opacity="0.4" />
+      <line x1="${padLeft}" y1="${yThr}" x2="${width - padRight}" y2="${yThr}" stroke="#D97706" stroke-width="2" stroke-dasharray="4 3" />
+      <rect x="${width - padRight - 122}" y="${yThr - 18}" width="122" height="16" rx="3" fill="#FEF8E7" stroke="#FDE68A" />
+      <text x="${width - padRight - 61}" y="${yThr - 6.5}" font-size="9" font-family="'JetBrains Mono', monospace" font-weight="700" fill="#B45309" text-anchor="middle">THRESHOLD: 0.57 (57%)</text>
+    `;
+
+    // Line segments
+    for (let i = 0; i < REPLAY_DATA.length - 1; i++) {
+      const p1 = REPLAY_DATA[i];
+      const p2 = REPLAY_DATA[i+1];
+      const x1 = getX(i);
+      const y1 = getY(p1.risk);
+      const x2 = getX(i+1);
+      const y2 = getY(p2.risk);
+
+      const strokeWidth = (i+1 <= currentStep) ? 2.5 : 1.2;
+      const opacity = (i+1 <= currentStep) ? 1.0 : 0.25;
+
+      svgHtml += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#262422" stroke-width="${strokeWidth}" stroke-linecap="round" opacity="${opacity}" />`;
+    }
+
+    // Synchronized Scrubber Line at current step
+    const curX = getX(currentStep);
+    svgHtml += `<line x1="${curX}" y1="${padTop}" x2="${curX}" y2="${padTop + plotH}" stroke="#191919" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.5" />`;
+
+    // Points and X-axis labels
+    REPLAY_DATA.forEach((d, i) => {
+      const x = getX(i);
+      const y = getY(d.risk);
+      const isCurrent = (i === currentStep);
+      const isPastOrCurrent = (i <= currentStep);
+
+      const pointColor = (d.risk >= THRESHOLD) ? '#D9381E' : '#235E43';
+      const radius = isCurrent ? 6 : 4;
+      const opacity = isPastOrCurrent ? 1.0 : 0.3;
+
+      if (isCurrent) {
+        svgHtml += `<circle cx="${x}" cy="${y}" r="11" fill="${pointColor}" opacity="0.2" />`;
       }
 
-      // Synchronized Scrubber Line at current step
-      const curX = getX(currentStep);
-      svgHtml += `<line x1="${curX}" y1="${padTop}" x2="${curX}" y2="${padTop + plotH}" stroke="#0f172a" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.45" />`;
+      // SVG Point element
+      svgHtml += `
+        <g class="chart-point" data-index="${i}" style="cursor: pointer;">
+          <circle cx="${x}" cy="${y}" r="${radius}" fill="${pointColor}" stroke="#FFFFFF" stroke-width="2" opacity="${opacity}" />
+          <circle cx="${x}" cy="${y}" r="14" fill="transparent" />
+        </g>
+      `;
 
-      // Points and X-axis labels
-      REPLAY_DATA.forEach((d, i) => {
-        const x = getX(i);
-        const y = getY(d.risk);
-        const isCurrent = (i === currentStep);
-        const isPastOrCurrent = (i <= currentStep);
+      // Time label
+      const fontW = isCurrent ? 'bold' : 'normal';
+      const fontColor = isCurrent ? '#191919' : '#7E766B';
+      svgHtml += `<text x="${x}" y="${height - 12}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono', monospace" font-weight="${fontW}" fill="${fontColor}">${d.time}</text>`;
+    });
 
-        const pointColor = (d.risk >= THRESHOLD) ? '#dc2626' : '#059669';
-        const radius = isCurrent ? 6 : 4;
-        const opacity = isPastOrCurrent ? 1.0 : 0.3;
+    riskSvg.innerHTML = svgHtml;
+    attachChartEvents(riskSvg, 'risk');
+  }
 
-        if (isCurrent) {
-          svgHtml += `<circle cx="${x}" cy="${y}" r="11" fill="${pointColor}" opacity="0.2" />`;
+  /**
+   * Interactive Chart Tooltips & Point click handlers
+   */
+  function attachChartEvents(svgEl, type) {
+    const tooltip = type === 'glucose' ? glucoseTooltip : riskTooltip;
+    const points = svgEl.querySelectorAll('.chart-point');
+
+    points.forEach(pt => {
+      const idx = parseInt(pt.getAttribute('data-index'), 10);
+      const data = REPLAY_DATA[idx];
+
+      pt.addEventListener('mouseenter', () => {
+        const rect = svgEl.getBoundingClientRect();
+        const circle = pt.querySelector('circle');
+        const cx = parseFloat(circle.getAttribute('cx'));
+        const cy = parseFloat(circle.getAttribute('cy'));
+
+        const posX = (cx / 600) * rect.width;
+        const posY = (cy / 220) * rect.height;
+
+        if (type === 'glucose') {
+          tooltip.innerHTML = `
+            <div style="font-weight:700; font-family:'JetBrains Mono'">${data.time} (Historical)</div>
+            <div>Glucose: <strong>${data.glucose.toFixed(1)} mg/dL</strong></div>
+            <div>30m Delta: ${data.delta30m >= 0 ? '+' : ''}${data.delta30m.toFixed(1)} mg/dL</div>
+            <div style="color:${data.glucose >= 120 ? '#F87171' : '#34D399'}">${data.trend} Trajectory</div>
+          `;
+        } else {
+          const pct = (data.risk * 100).toFixed(1);
+          const deltaThr = ((data.risk - THRESHOLD) * 100).toFixed(1);
+          tooltip.innerHTML = `
+            <div style="font-weight:700; font-family:'JetBrains Mono'">${data.time} Model Score</div>
+            <div>Score: <strong>${(data.risk).toFixed(4)} (${pct}%)</strong></div>
+            <div>Threshold: 0.5700 | Margin: ${deltaThr >= 0 ? '+' : ''}${deltaThr} pp</div>
+            <div style="color:${data.level === 'HIGH' ? '#F87171' : '#34D399'}; font-weight:700">Class: ${data.level} RISK</div>
+          `;
         }
 
-        // SVG Point element
-        svgHtml += `
-          <g class="chart-point" data-index="${i}" style="cursor: pointer;">
-            <circle cx="${x}" cy="${y}" r="${radius}" fill="${pointColor}" stroke="#ffffff" stroke-width="2" opacity="${opacity}" />
-            <circle cx="${x}" cy="${y}" r="14" fill="transparent" />
-          </g>
-        `;
-
-        // Time label
-        const fontW = isCurrent ? 'bold' : 'normal';
-        const fontColor = isCurrent ? '#0f172a' : '#64748b';
-        svgHtml += `<text x="${x}" y="${height - 12}" text-anchor="middle" font-size="9.5" font-family="'JetBrains Mono', monospace" font-weight="${fontW}" fill="${fontColor}">${d.time}</text>`;
+        tooltip.style.left = `${posX}px`;
+        tooltip.style.top = `${posY - 8}px`;
+        tooltip.style.opacity = '1';
       });
 
-      riskSvg.innerHTML = svgHtml;
-      attachChartEvents(riskSvg, 'risk');
-    }
-
-    /**
-     * Interactive Chart Tooltips & Point click handlers
-     */
-    function attachChartEvents(svgEl, type) {
-      const tooltip = type === 'glucose' ? glucoseTooltip : riskTooltip;
-      const points = svgEl.querySelectorAll('.chart-point');
-
-      points.forEach(pt => {
-        const idx = parseInt(pt.getAttribute('data-index'), 10);
-        const data = REPLAY_DATA[idx];
-
-        pt.addEventListener('mouseenter', () => {
-          const rect = svgEl.getBoundingClientRect();
-          const circle = pt.querySelector('circle');
-          const cx = parseFloat(circle.getAttribute('cx'));
-          const cy = parseFloat(circle.getAttribute('cy'));
-
-          const posX = (cx / 600) * rect.width;
-          const posY = (cy / 220) * rect.height;
-
-          if (type === 'glucose') {
-            tooltip.innerHTML = `
-              <div style="font-weight:700; font-family:'JetBrains Mono'">${data.time} (Historical)</div>
-              <div>Glucose: <strong>${data.glucose.toFixed(1)} mg/dL</strong></div>
-              <div>30m Delta: ${data.delta30m >= 0 ? '+' : ''}${data.delta30m.toFixed(1)} mg/dL</div>
-              <div style="color:${data.glucose >= 120 ? '#f87171' : '#34d399'}">${data.trend} Trajectory</div>
-            `;
-          } else {
-            const pct = (data.risk * 100).toFixed(1);
-            const deltaThr = ((data.risk - THRESHOLD) * 100).toFixed(1);
-            tooltip.innerHTML = `
-              <div style="font-weight:700; font-family:'JetBrains Mono'">${data.time} Model Score</div>
-              <div>Score: <strong>${(data.risk).toFixed(4)} (${pct}%)</strong></div>
-              <div>Threshold: 0.5700 | Margin: ${deltaThr >= 0 ? '+' : ''}${deltaThr} percentage points</div>
-              <div style="color:${data.level === 'HIGH' ? '#f87171' : '#34d399'}; font-weight:700">Class: ${data.level} RISK</div>
-            `;
-          }
-
-          tooltip.style.left = `${posX}px`;
-          tooltip.style.top = `${posY - 8}px`;
-          tooltip.style.opacity = '1';
-        });
-
-        pt.addEventListener('mouseleave', () => {
-          tooltip.style.opacity = '0';
-        });
-
-        pt.addEventListener('click', () => {
-          if (!LIVE_MODE) setReplayStep(idx);
-        });
+      pt.addEventListener('mouseleave', () => {
+        tooltip.style.opacity = '0';
       });
+
+      pt.addEventListener('click', () => {
+        if (!LIVE_MODE) setReplayStep(idx);
+      });
+    });
+  }
+
+  /**
+   * Dashboard State Update Logic
+   */
+  async function updateDashboard(stepIndex, prefetchedTwinState = null, replayStatus = null) {
+    const twinState = prefetchedTwinState || await DataAdapter.getTwinState(stepIndex);
+
+    if (LIVE_MODE && Number.isInteger(twinState.matchedIndex) && twinState.matchedIndex >= 0) {
+      currentStep = twinState.matchedIndex;
+    } else if (LIVE_MODE && replayStatus && Number.isInteger(replayStatus.current_index) && replayStatus.current_index > 0) {
+      currentStep = Math.min(replayStatus.current_index - 1, Math.max(0, REPLAY_DATA.length - 1));
+    } else if (typeof stepIndex === "number" && stepIndex >= 0) {
+      currentStep = Math.min(stepIndex, Math.max(0, REPLAY_DATA.length - 1));
     }
 
-    /**
-     * Dashboard State Update Logic
-     */
-    async function updateDashboard(stepIndex) {
-      const twinState = await DataAdapter.getTwinState(stepIndex);
-      const summary = await DataAdapter.getClinicianSummary(twinState);
-
-      currentStep = (LIVE_MODE && Number.isInteger(twinState.matchedIndex))
-        ? twinState.matchedIndex
-        : stepIndex;
+    if (LIVE_MODE && replayStatus && replayStatus.total_rows > 0) {
+      slider.max = String(Math.max(1, replayStatus.total_rows - 1));
+      slider.value = String(Math.max(0, Math.min(replayStatus.current_index - 1, replayStatus.total_rows - 1)));
+      stepCounter.innerText = `${replayStatus.current_index} / ${replayStatus.total_rows}`;
+    } else {
       slider.max = String(Math.max(1, REPLAY_DATA.length - 1));
       slider.value = currentStep;
       stepCounter.innerText = `${currentStep + 1} / ${REPLAY_DATA.length}`;
-      replayTimeLabel.innerText = twinState.time || "Latest";
-      headerSession.innerText = twinState.session || "2001_0_20201102";
-      if (LIVE_MODE) {
-        headerTimestamp.innerText = twinState.sourceTimestamp
-          ? `Source row: ${twinState.sourceTimestamp} | Azure updated: ${twinState.lastUpdated || "time unavailable"}`
-          : `Azure updated: ${twinState.lastUpdated || "source timestamp unavailable"}`;
-      } else {
-        headerTimestamp.innerText = `2020-11-02 ${twinState.time} (dataset time)`;
-      }
-
-      // Summary Cards
-      cardGlucose.innerText = twinState.glucose == null || !Number.isFinite(Number(twinState.glucose)) ? 'Unavailable' : Number(twinState.glucose).toFixed(1);
-      
-      if (twinState.delta30m == null || !Number.isFinite(Number(twinState.delta30m))) {
-        cardDelta.innerText = 'Not stored in twin';
-        cardDelta.style.color = '#64748b';
-      } else {
-        const deltaValue = Number(twinState.delta30m);
-        const deltaSign = deltaValue >= 0 ? '+' : '';
-        cardDelta.innerText = `${deltaSign}${deltaValue.toFixed(1)} mg/dL`;
-        cardDelta.style.color = deltaValue > 15 ? '#dc2626' : (deltaValue < 0 ? '#047857' : '#334155');
-      }
-
-      cardTrend.innerText = twinState.trend || 'Unknown';
-      cardTrend.style.color = twinState.trend === 'Rising' ? '#dc2626' : (twinState.trend === 'Falling' ? '#047857' : '#334155');
-
-      const riskValue = twinState.risk == null ? Number.NaN : Number(twinState.risk);
-      const riskAvailable = Number.isFinite(riskValue);
-      const riskScorePct = riskAvailable ? (riskValue * 100).toFixed(2) : 'Unavailable';
-      cardPredictedEvent.innerText = twinState.predictedEvent || (twinState.level === 'HIGH' ? 'Glucose Spike' : twinState.level === 'LOW' ? 'No Glucose Spike' : 'Unavailable');
-      cardRiskScore.innerText = riskScorePct;
-
-      const margin = riskAvailable ? ((riskValue - THRESHOLD) * 100).toFixed(2) : null;
-      const marginSign = Number(margin) >= 0 ? '+' : '';
-      cardMargin.innerText = riskAvailable ? `${marginSign}${margin} pp` : 'Unavailable';
-      cardMargin.style.color = !riskAvailable ? '#64748b' : (Number(margin) >= 0 ? '#dc2626' : '#047857');
-
-      const isHigh = twinState.level === 'HIGH';
-      const isLow = twinState.level === 'LOW';
-      if (isHigh) {
-        cardRiskContainer.className = 'metric-card card-highlight-high';
-        badgeClassification.className = 'badge-risk high';
-        badgeClassification.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-600 inline-block"></span> HIGH';
-        cardClassText.innerText = 'HIGH RISK';
-        cardClassText.style.color = '#dc2626';
-      } else if (isLow) {
-        cardRiskContainer.className = 'metric-card';
-        badgeClassification.className = 'badge-risk low';
-        badgeClassification.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block"></span> LOW';
-        cardClassText.innerText = 'LOW RISK';
-        cardClassText.style.color = '#047857';
-      } else {
-        cardRiskContainer.className = 'metric-card';
-        badgeClassification.className = 'badge-risk';
-        badgeClassification.textContent = 'UNKNOWN';
-        cardClassText.innerText = 'RISK UNAVAILABLE';
-        cardClassText.style.color = '#64748b';
-      }
-
-      // Model Card Math
-      mathScore.innerText = riskAvailable ? riskValue.toFixed(4) : 'Unavailable';
-      const rawDelta = riskAvailable ? riskValue - THRESHOLD : Number.NaN;
-      mathDelta.innerText = riskAvailable ? `${rawDelta >= 0 ? '+' : ''}${rawDelta.toFixed(4)} (${rawDelta >= 0 ? '+' : ''}${(rawDelta * 100).toFixed(2)} pp)` : 'Unavailable';
-      mathDelta.style.color = !riskAvailable ? '#64748b' : (isHigh ? '#dc2626' : '#047857');
-      mathClass.innerText = twinState.level || 'UNKNOWN';
-      mathClass.style.color = isHigh ? '#dc2626' : (isLow ? '#047857' : '#64748b');
-
-      decisionMathBadge.className = isHigh ? 'badge-risk high' : (isLow ? 'badge-risk low' : 'badge-risk');
-      decisionMathBadge.innerText = isHigh ? 'SCORE ≥ 0.57 (SPIKE PREDICTED)' : (isLow ? 'SCORE < 0.57 (BELOW THRESHOLD)' : 'RISK SCORE UNAVAILABLE');
-
-      decisionBarFill.style.width = riskAvailable ? `${Math.min(100, Math.max(0, riskValue * 100))}%` : '0%';
-      decisionBarFill.style.background = isHigh ? '#dc2626' : (isLow ? '#059669' : '#94a3b8');
-
-      // AI Clinician Panel
-      aiNarrative.innerHTML = summary.narrative;
-      aiTelemetry.innerHTML = summary.telemetry;
-      aiPrediction.innerHTML = summary.prediction;
-      aiInterpretation.innerHTML = summary.interpretation;
-
-      // Re-render chart markers & synchronized scrubber line
-      renderCharts();
     }
 
-    function setReplayStep(step) {
-      if (step < 0) step = 0;
-      if (step >= REPLAY_DATA.length) step = REPLAY_DATA.length - 1;
-      updateDashboard(step);
+    replayTimeLabel.innerText = twinState.time || "Latest";
+    headerSession.innerText = twinState.session || "2001_0_20201102";
+    if (LIVE_MODE) {
+      headerTimestamp.innerText = twinState.sourceTimestamp
+        ? `Source row: ${twinState.sourceTimestamp} | Azure updated: ${twinState.lastUpdated || "time unavailable"}`
+        : `Azure updated: ${twinState.lastUpdated || "source timestamp unavailable"}`;
+    } else {
+      headerTimestamp.innerText = `2020-11-02 ${twinState.time} (dataset time)`;
     }
 
-    function togglePlay() {
-      if (isPlaying) {
+    // Summary Cards
+    cardGlucose.innerText = twinState.glucose == null || !Number.isFinite(Number(twinState.glucose)) ? 'Unavailable' : Number(twinState.glucose).toFixed(1);
+    
+    if (twinState.delta30m == null || !Number.isFinite(Number(twinState.delta30m))) {
+      cardDelta.innerText = 'Not stored in twin';
+      cardDelta.style.color = 'var(--ink-faint)';
+    } else {
+      const deltaValue = Number(twinState.delta30m);
+      const deltaSign = deltaValue >= 0 ? '+' : '';
+      cardDelta.innerText = `${deltaSign}${deltaValue.toFixed(1)} mg/dL`;
+      cardDelta.style.color = deltaValue > 15 ? 'var(--alert-high)' : (deltaValue < 0 ? 'var(--status-low)' : 'var(--ink-dark)');
+    }
+
+    cardTrend.innerText = twinState.trend || 'Unknown';
+    cardTrend.style.color = twinState.trend === 'Rising' ? 'var(--alert-high)' : (twinState.trend === 'Falling' ? 'var(--status-low)' : 'var(--ink-dark)');
+
+    const riskValue = twinState.risk == null ? Number.NaN : Number(twinState.risk);
+    const riskAvailable = Number.isFinite(riskValue);
+    const riskScorePct = riskAvailable ? (riskValue * 100).toFixed(2) : 'Unavailable';
+    cardPredictedEvent.innerText = twinState.predictedEvent || (twinState.level === 'HIGH' ? 'Glucose Spike' : twinState.level === 'LOW' ? 'No Glucose Spike' : 'Unavailable');
+    cardRiskScore.innerText = riskScorePct;
+
+    const margin = riskAvailable ? ((riskValue - THRESHOLD) * 100).toFixed(2) : null;
+    const marginSign = Number(margin) >= 0 ? '+' : '';
+    cardMargin.innerText = riskAvailable ? `${marginSign}${margin} pp` : 'Unavailable';
+    cardMargin.style.color = !riskAvailable ? 'var(--ink-faint)' : (Number(margin) >= 0 ? 'var(--alert-high)' : 'var(--status-low)');
+
+    const isHigh = twinState.level === 'HIGH';
+    const isLow = twinState.level === 'LOW';
+    if (isHigh) {
+      cardRiskContainer.className = 'metric-card card-highlight-high';
+      badgeClassification.className = 'badge-risk high';
+      badgeClassification.innerHTML = '<span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> HIGH';
+      cardClassText.innerText = 'HIGH RISK';
+      cardClassText.style.color = 'var(--alert-high)';
+    } else if (isLow) {
+      cardRiskContainer.className = 'metric-card';
+      badgeClassification.className = 'badge-risk low';
+      badgeClassification.innerHTML = '<span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> LOW';
+      cardClassText.innerText = 'LOW RISK';
+      cardClassText.style.color = 'var(--status-low)';
+    } else {
+      cardRiskContainer.className = 'metric-card';
+      badgeClassification.className = 'badge-risk';
+      badgeClassification.textContent = 'UNKNOWN';
+      cardClassText.innerText = 'RISK UNAVAILABLE';
+      cardClassText.style.color = 'var(--ink-faint)';
+    }
+
+    // Model Card Math
+    mathScore.innerText = riskAvailable ? riskValue.toFixed(4) : 'Unavailable';
+    const rawDelta = riskAvailable ? riskValue - THRESHOLD : Number.NaN;
+    mathDelta.innerText = riskAvailable ? `${rawDelta >= 0 ? '+' : ''}${rawDelta.toFixed(4)} (${rawDelta >= 0 ? '+' : ''}${(rawDelta * 100).toFixed(2)} pp)` : 'Unavailable';
+    mathDelta.style.color = !riskAvailable ? 'var(--ink-faint)' : (isHigh ? 'var(--alert-high)' : 'var(--status-low)');
+    mathClass.innerText = twinState.level || 'UNKNOWN';
+    mathClass.style.color = isHigh ? 'var(--alert-high)' : (isLow ? 'var(--status-low)' : 'var(--ink-faint)');
+
+    decisionMathBadge.className = isHigh ? 'badge-risk high' : (isLow ? 'badge-risk low' : 'badge-risk');
+    decisionMathBadge.innerText = isHigh ? 'SCORE ≥ 0.57 (SPIKE PREDICTED)' : (isLow ? 'SCORE < 0.57 (BELOW THRESHOLD)' : 'RISK SCORE UNAVAILABLE');
+
+    decisionBarFill.style.width = riskAvailable ? `${Math.min(100, Math.max(0, riskValue * 100))}%` : '0%';
+    decisionBarFill.style.background = isHigh ? 'var(--alert-high)' : (isLow ? 'var(--status-low)' : '#94A3B8');
+
+    // Re-render chart markers & synchronized scrubber line
+    renderCharts();
+  }
+
+  function setReplayStep(step) {
+    if (step < 0) step = 0;
+    if (step >= REPLAY_DATA.length) step = REPLAY_DATA.length - 1;
+    updateDashboard(step);
+  }
+
+  // --- Fixture Mode Playback Logic ---
+  function togglePlay() {
+    if (isPlaying) {
+      pausePlay();
+    } else {
+      startPlay();
+    }
+  }
+
+  function startPlay() {
+    isPlaying = true;
+    playText.innerText = 'Pause';
+    btnPlay.classList.add('primary');
+    playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+
+    if (currentStep >= REPLAY_DATA.length - 1) {
+      currentStep = 0;
+    }
+
+    playInterval = setInterval(() => {
+      if (currentStep < REPLAY_DATA.length - 1) {
+        setReplayStep(currentStep + 1);
+      } else {
         pausePlay();
-      } else {
-        startPlay();
       }
-    }
+    }, 1600);
+  }
 
-    function startPlay() {
-      isPlaying = true;
-      playText.innerText = 'Pause';
+  function pausePlay() {
+    isPlaying = false;
+    playText.innerText = 'Auto Replay';
+    playIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+    if (playInterval) {
+      clearInterval(playInterval);
+      playInterval = null;
+    }
+  }
+
+  // --- Live Mode Backend Replay Controller Logic ---
+  let isLiveReplayRunning = false;
+  let isReplayActionPending = false;
+  let livePollTimeoutId = null;
+  let isLivePollInFlight = false;
+  let lastKnownIndex = -1;
+  let lastKnownTimestamp = null;
+
+  function stopLivePolling() {
+    if (livePollTimeoutId) {
+      clearTimeout(livePollTimeoutId);
+      livePollTimeoutId = null;
+    }
+    isLivePollInFlight = false;
+  }
+
+  function scheduleLivePolling(delayMs = 2500) {
+    stopLivePolling();
+    if (!LIVE_MODE) return;
+    livePollTimeoutId = setTimeout(async () => {
+      await runLivePollCycle();
+    }, delayMs);
+  }
+
+  function updateLiveControlsFromStatus(status) {
+    if (!LIVE_MODE || !status) return;
+    isLiveReplayRunning = Boolean(status.running);
+
+    btnPlay.disabled = isReplayActionPending;
+    btnNext.disabled = isReplayActionPending;
+    btnReset.disabled = isReplayActionPending;
+
+    if (status.running) {
       btnPlay.classList.add('primary');
+      playText.textContent = 'Pause';
       playIcon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
-
-      if (currentStep >= REPLAY_DATA.length - 1) {
-        currentStep = 0;
-      }
-
-      playInterval = setInterval(() => {
-        if (currentStep < REPLAY_DATA.length - 1) {
-          setReplayStep(currentStep + 1);
-        } else {
-          pausePlay();
-        }
-      }, 1600);
-    }
-
-    function pausePlay() {
-      isPlaying = false;
-      playText.innerText = 'Auto Replay';
+      btnPlay.setAttribute('aria-label', 'Pause Replay');
+    } else {
+      btnPlay.classList.remove('primary');
       playIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
-      if (playInterval) {
-        clearInterval(playInterval);
-        playInterval = null;
+      if (status.completed) {
+        playText.textContent = 'Restart Replay';
+        btnPlay.setAttribute('aria-label', 'Restart Replay');
+      } else if (status.paused) {
+        playText.textContent = 'Resume Replay';
+        btnPlay.setAttribute('aria-label', 'Resume Replay');
+      } else {
+        playText.textContent = 'Start Replay';
+        btnPlay.setAttribute('aria-label', 'Start Replay');
       }
     }
 
-    // Event Listeners
-    slider.addEventListener('input', (e) => {
+    if (status.last_error) {
+      modeBadge.title = `Last replay warning: ${status.last_error}`;
+    }
+  }
+
+  async function runLivePollCycle() {
+    if (!LIVE_MODE || isLivePollInFlight) return;
+    isLivePollInFlight = true;
+    try {
+      let status = null;
+      try {
+        status = await DataAdapter.getReplayStatus();
+      } catch (_) {}
+
+      if (status && status.success) {
+        updateLiveControlsFromStatus(status);
+        if (status.total_rows > REPLAY_DATA.length) {
+          try {
+            const freshHistory = await DataAdapter.getReplayHistory(status.total_rows);
+            if (freshHistory && freshHistory.length > REPLAY_DATA.length) {
+              REPLAY_DATA = freshHistory;
+              slider.max = String(Math.max(1, REPLAY_DATA.length - 1));
+            }
+          } catch (_) {}
+        }
+      }
+
+      let twinState = null;
+      try {
+        twinState = await DataAdapter.getTwinState();
+      } catch (_) {}
+
+      if (twinState && twinState.patientId) {
+        const currentTimestamp = twinState.sourceTimestamp || twinState.lastUpdated;
+        const currentIndex = status ? status.current_index : -1;
+        const hasNewData = (currentTimestamp && currentTimestamp !== lastKnownTimestamp) ||
+                           (currentIndex !== lastKnownIndex && currentIndex >= 0);
+
+        if (hasNewData || lastKnownIndex === -1) {
+          lastKnownTimestamp = currentTimestamp;
+          lastKnownIndex = currentIndex;
+          await updateDashboard(currentStep, twinState, status);
+        }
+      }
+    } catch (err) {
+      console.warn('Live poll cycle warning:', err.message);
+    } finally {
+      isLivePollInFlight = false;
+      if (LIVE_MODE) {
+        scheduleLivePolling(2500);
+      }
+    }
+  }
+
+  async function handleLivePlayToggle() {
+    if (!LIVE_MODE || isReplayActionPending) return;
+    isReplayActionPending = true;
+    btnPlay.disabled = true;
+    btnPlay.style.opacity = '0.7';
+
+    try {
+      if (isLiveReplayRunning) {
+        const status = await DataAdapter.pauseReplay();
+        updateLiveControlsFromStatus(status);
+      } else {
+        const status = await DataAdapter.startReplay({
+          patient_id: "2001",
+          session_id: "2001_0_20201102",
+          twin_id: "P001",
+          limit: 20,
+          delay_seconds: 2.0
+        });
+        updateLiveControlsFromStatus(status);
+      }
+      await runLivePollCycle();
+    } catch (err) {
+      console.error('Replay start/pause failed:', err);
+      window.alert(`Replay request failed: ${err.message}`);
+    } finally {
+      isReplayActionPending = false;
+      btnPlay.disabled = false;
+      btnPlay.style.opacity = '1';
+    }
+  }
+
+  async function handleLiveStep() {
+    if (!LIVE_MODE || isReplayActionPending) return;
+    isReplayActionPending = true;
+    btnNext.disabled = true;
+    btnNext.style.opacity = '0.7';
+
+    try {
+      if (isLiveReplayRunning) {
+        const pauseStatus = await DataAdapter.pauseReplay();
+        updateLiveControlsFromStatus(pauseStatus);
+      }
+      const status = await DataAdapter.stepReplay();
+      updateLiveControlsFromStatus(status);
+      await runLivePollCycle();
+    } catch (err) {
+      console.error('Replay step forward failed:', err);
+      window.alert(`Step forward failed: ${err.message}`);
+    } finally {
+      isReplayActionPending = false;
+      btnNext.disabled = false;
+      btnNext.style.opacity = '1';
+    }
+  }
+
+  async function handleLiveReset() {
+    if (!LIVE_MODE || isReplayActionPending) return;
+    isReplayActionPending = true;
+    btnReset.disabled = true;
+    btnReset.style.opacity = '0.7';
+
+    try {
+      if (isLiveReplayRunning) {
+        const pauseStatus = await DataAdapter.pauseReplay();
+        updateLiveControlsFromStatus(pauseStatus);
+      }
+      const status = await DataAdapter.resetReplay();
+      updateLiveControlsFromStatus(status);
+      await runLivePollCycle();
+    } catch (err) {
+      console.error('Replay reset failed:', err);
+      window.alert(`Reset replay cursor failed: ${err.message}`);
+    } finally {
+      isReplayActionPending = false;
+      btnReset.disabled = false;
+      btnReset.style.opacity = '1';
+    }
+  }
+
+  // Event Listeners
+  slider.addEventListener('input', (e) => {
+    if (!LIVE_MODE) {
       pausePlay();
       setReplayStep(parseInt(e.target.value, 10));
-    });
+    }
+  });
 
-    btnPlay.addEventListener('click', togglePlay);
+  btnPlay.addEventListener('click', () => {
+    if (LIVE_MODE) {
+      handleLivePlayToggle();
+    } else {
+      togglePlay();
+    }
+  });
 
-    btnPrev.addEventListener('click', () => {
+  btnPrev.addEventListener('click', () => {
+    if (!LIVE_MODE) {
       pausePlay();
       setReplayStep(currentStep - 1);
-    });
+    }
+  });
 
-    btnNext.addEventListener('click', () => {
+  btnNext.addEventListener('click', () => {
+    if (LIVE_MODE) {
+      handleLiveStep();
+    } else {
       pausePlay();
       setReplayStep(currentStep + 1);
-    });
+    }
+  });
 
-    btnReset.addEventListener('click', () => {
+  btnReset.addEventListener('click', () => {
+    if (LIVE_MODE) {
+      handleLiveReset();
+    } else {
       pausePlay();
       setReplayStep(0);
-    });
-
-    btnRefresh.addEventListener('click', async () => {
-      btnRefresh.style.opacity = '0.6';
-      btnRefresh.disabled = true;
-      btnRefresh.textContent = LIVE_MODE ? 'Reading Azure...' : 'Refreshing Demo...';
-      try {
-        if (LIVE_MODE) {
-          REPLAY_DATA = await DataAdapter.getReplayHistory();
-        }
-        await updateDashboard(currentStep);
-        if (LIVE_MODE) await updateSystemStatus();
-      } catch (error) {
-        console.error('Dashboard refresh failed:', error);
-        modeBadge.textContent = 'API CONNECTION ERROR';
-        modeBadge.title = error.message;
-        window.alert(`Could not refresh the dashboard from the local API.
-
-${error.message}
-
-Confirm dashboard_api.py is running on 127.0.0.1:8000.`);
-      } finally {
-        btnRefresh.style.opacity = '1';
-        btnRefresh.disabled = false;
-        btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> ${LIVE_MODE ? 'Refresh Twin State' : 'Refresh Demo State'}`;
-      }
-    });
-
-    // Window resize observer for responsive SVG charts
-    window.addEventListener('resize', () => {
-      renderCharts();
-    });
-
-    async function updateSystemStatus() {
-      const status = await DataAdapter.getSystemStatus();
-      if (!LIVE_MODE) {
-        statusAzure.textContent = 'Fixture only';
-        statusMcp.textContent = 'Separate Antigravity MCP';
-        statusAgent.textContent = 'Runs in Antigravity';
-        statusReplay.textContent = `${REPLAY_DATA.length}-row fixture`;
-        return;
-      }
-      statusAzure.textContent = status.azure_twin_reachable ? 'Reachable' : 'Unavailable';
-      statusAzure.className = status.azure_twin_reachable ? 'status-pill ready' : 'status-pill prototype';
-      statusMcp.textContent = 'Separate stdio process';
-      statusAgent.textContent = 'Separate Antigravity agent';
-      statusReplay.textContent = status.feature_csv_exists && status.model_file_exists ? 'CSV + model found' : 'Assets missing';
     }
+  });
 
-    async function initializeDashboard() {
-      if (!LIVE_MODE) {
-        modeBadge.textContent = 'LOCAL FIXTURE REPLAY';
-        summarySourceBadge.textContent = 'SAMPLE RESPONSE';
-        btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> Refresh Demo State`;
-        await updateDashboard(Math.min(9, REPLAY_DATA.length - 1));
+  btnRefresh.addEventListener('click', async () => {
+    btnRefresh.style.opacity = '0.6';
+    btnRefresh.disabled = true;
+    btnRefresh.textContent = LIVE_MODE ? 'Reading Azure...' : 'Refreshing Demo...';
+    try {
+      if (LIVE_MODE) {
+        let replayStatus = null;
+        try {
+          replayStatus = await DataAdapter.getReplayStatus();
+        } catch (_) {}
+        if (replayStatus) updateLiveControlsFromStatus(replayStatus);
+
+        const targetLimit = (replayStatus && replayStatus.total_rows > 0) ? Math.max(20, replayStatus.total_rows) : 20;
+        REPLAY_DATA = await DataAdapter.getReplayHistory(targetLimit);
+
+        const twinState = await DataAdapter.getTwinState();
+        await updateDashboard(currentStep, twinState, replayStatus);
         await updateSystemStatus();
-        return;
+        scheduleLivePolling(2500);
+      } else {
+        await updateDashboard(currentStep);
       }
+    } catch (error) {
+      console.error('Dashboard refresh failed:', error);
+      modeBadge.textContent = 'API CONNECTION ERROR';
+      modeBadge.title = error.message;
+      window.alert(`Could not refresh the dashboard from the local API.\n\n${error.message}\n\nConfirm dashboard_api.py is running on 127.0.0.1:8000.`);
+    } finally {
+      btnRefresh.style.opacity = '1';
+      btnRefresh.disabled = false;
+      btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> ${LIVE_MODE ? 'Refresh Twin State' : 'Refresh Demo State'}`;
+    }
+  });
 
-      modeBadge.textContent = 'LIVE TWIN API';
-      summarySourceBadge.textContent = 'STATE-DERIVED';
-      modeBadge.title = 'Current cards query the local read-only API. Charts show historical replay rows.';
-      btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> Refresh Twin State`;
-      // Live mode reads Azure state. Replay controls remain disabled so a local fixture
-      // scrub cannot masquerade as writing a new reading into Azure.
+  // Window resize observer for responsive SVG charts
+  window.addEventListener('resize', () => {
+    renderCharts();
+  });
+
+  async function updateSystemStatus() {
+    const status = await DataAdapter.getSystemStatus();
+    if (!LIVE_MODE) {
+      statusAzure.textContent = 'Fixture only';
+      statusMcp.textContent = 'Separate Antigravity MCP';
+      statusAgent.textContent = 'Runs in Antigravity';
+      statusReplay.textContent = `${REPLAY_DATA.length}-row fixture`;
+      return;
+    }
+    statusAzure.textContent = status.azure_twin_reachable ? 'Reachable' : 'Unavailable';
+    statusAzure.className = status.azure_twin_reachable ? 'status-pill ready' : 'status-pill prototype';
+    statusMcp.textContent = 'Separate stdio process';
+    statusAgent.textContent = 'Separate Antigravity agent';
+    statusReplay.textContent = status.feature_csv_exists && status.model_file_exists ? 'CSV + model found' : 'Assets missing';
+  }
+
+  async function initializeDashboard() {
+    stopLivePolling();
+    if (!LIVE_MODE) {
+      modeBadge.textContent = 'LOCAL FIXTURE REPLAY';
+      btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> Refresh Demo State`;
       [btnPlay, btnPrev, btnNext, btnReset, slider].forEach(control => {
-        control.disabled = true;
-        control.title = 'Local replay controls are disabled in Live Twin API mode.';
+        control.disabled = false;
+        control.style.cursor = 'pointer';
+        control.style.opacity = '1';
       });
-      playText.textContent = 'Live Twin';
-      try {
-        REPLAY_DATA = await DataAdapter.getReplayHistory();
-        if (!REPLAY_DATA.length) throw new Error('No replay rows were returned.');
-        slider.max = String(REPLAY_DATA.length - 1);
-        currentStep = REPLAY_DATA.length - 1;
-        const state = await DataAdapter.getTwinState(currentStep);
-        currentStep = Number.isInteger(state.matchedIndex) ? state.matchedIndex : currentStep;
-        await updateDashboard(currentStep);
-        await updateSystemStatus();
-      } catch (error) {
-        console.error('Live dashboard initialization failed:', error);
-        // Explicitly fall back to a labelled fixture mode, never silently present fixture values as live.
-        LIVE_MODE = false;
-        REPLAY_DATA = [...DEMO_DATA];
-        [btnPlay, btnPrev, btnNext, btnReset, slider].forEach(control => { control.disabled = false; });
-        modeBadge.textContent = 'API UNAVAILABLE — DEMO FIXTURE';
-        summarySourceBadge.textContent = 'SAMPLE RESPONSE';
-        modeBadge.title = error.message;
-        await updateDashboard(Math.min(9, REPLAY_DATA.length - 1));
-        await updateSystemStatus();
-        window.alert(`Live API could not be reached, so the dashboard is showing the clearly labelled local demo fixture.
-
-${error.message}
-
-Start dashboard_api.py and reload with ?mode=live to try again.`);
-      }
+      playText.textContent = 'Auto Replay';
+      btnPlay.classList.add('primary');
+      await updateDashboard(Math.min(9, REPLAY_DATA.length - 1));
+      await updateSystemStatus();
+      return;
     }
 
-    // Navigation scroll links
-    document.querySelectorAll('.nav-item[data-target]').forEach(item => {
-      item.addEventListener('click', () => {
-        const target = document.getElementById(item.dataset.target);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-        item.classList.add('active');
-      });
-    });
+    modeBadge.textContent = 'LIVE TWIN API';
+    modeBadge.title = 'Replay controls stream simulated historical CGM rows into Azure Digital Twins.';
+    btnRefresh.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/></svg> Refresh Twin State`;
 
-    // Initial render
-    initializeDashboard();
-  </script>
-</body></html>
+    // Live mode controls setup
+    btnPlay.disabled = false;
+    btnPlay.title = 'Start or pause automatic historical CGM replay into Azure Digital Twins.';
+    btnPlay.style.cursor = 'pointer';
+    btnPlay.style.opacity = '1';
+    playText.textContent = 'Start Replay';
+
+    btnNext.disabled = false;
+    btnNext.title = 'Step forward one historical CGM reading and update Azure Digital Twin.';
+    btnNext.style.cursor = 'pointer';
+    btnNext.style.opacity = '1';
+
+    btnReset.disabled = false;
+    btnReset.title = 'Reset replay cursor to record 0 (Azure Digital Twin values are preserved).';
+    btnReset.style.cursor = 'pointer';
+    btnReset.style.opacity = '1';
+
+    btnPrev.disabled = true;
+    btnPrev.title = 'Step back is not supported in Live Twin API mode (replay moves forward only).';
+    btnPrev.style.cursor = 'not-allowed';
+    btnPrev.style.opacity = '0.5';
+
+    slider.disabled = true;
+    slider.title = 'Historical seeking slider is disabled in Live Twin API mode.';
+    slider.style.cursor = 'not-allowed';
+
+    try {
+      let replayStatus = null;
+      try {
+        replayStatus = await DataAdapter.getReplayStatus();
+      } catch (_) {}
+
+      if (replayStatus) {
+        updateLiveControlsFromStatus(replayStatus);
+      }
+
+      const targetLimit = (replayStatus && replayStatus.total_rows > 0) ? Math.max(20, replayStatus.total_rows) : 20;
+      REPLAY_DATA = await DataAdapter.getReplayHistory(targetLimit);
+      if (!REPLAY_DATA.length) throw new Error('No replay rows were returned.');
+      slider.max = String(REPLAY_DATA.length - 1);
+      currentStep = REPLAY_DATA.length - 1;
+
+      const state = await DataAdapter.getTwinState(currentStep);
+      currentStep = Number.isInteger(state.matchedIndex) && state.matchedIndex >= 0 ? state.matchedIndex : currentStep;
+      lastKnownIndex = replayStatus ? replayStatus.current_index : -1;
+      lastKnownTimestamp = state.sourceTimestamp || state.lastUpdated;
+
+      await updateDashboard(currentStep, state, replayStatus);
+      await updateSystemStatus();
+
+      // Start lifecycle-safe polling in live mode
+      scheduleLivePolling(2500);
+    } catch (error) {
+      console.error('Live dashboard initialization failed:', error);
+      stopLivePolling();
+      // Explicitly fall back to a labelled fixture mode, never silently present fixture values as live.
+      LIVE_MODE = false;
+      REPLAY_DATA = [...DEMO_DATA];
+      [btnPlay, btnPrev, btnNext, btnReset, slider].forEach(control => {
+        control.disabled = false;
+        control.style.cursor = 'pointer';
+        control.style.opacity = '1';
+      });
+      modeBadge.textContent = 'API UNAVAILABLE — DEMO FIXTURE';
+      modeBadge.title = error.message;
+      await updateDashboard(Math.min(9, REPLAY_DATA.length - 1));
+      await updateSystemStatus();
+      window.alert(`Live API could not be reached, so the dashboard is showing the clearly labelled local demo fixture.\n\n${error.message}\n\nStart dashboard_api.py and reload with ?mode=live to try again.`);
+    }
+  }
+
+  // Navigation scroll links
+  document.querySelectorAll('.nav-item[data-target]').forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = item.getAttribute('data-target');
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Initial render
+  initializeDashboard();
+</script>
+</body>
+</html>

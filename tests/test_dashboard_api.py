@@ -169,6 +169,37 @@ class TestReplayHistoryEndpoint:
         res_high = client.get("/api/replay-history?limit=301")
         assert res_high.status_code == 422
 
+    def test_replay_history_default_returns_20_records(self, client):
+        """Regression test: default limit is 20 to match active replay session configuration."""
+        response = client.get("/api/replay-history")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["count"] == 20
+        assert len(data["rows"]) == 20
+
+        # Monotonically increasing timestamps in chronological order
+        timestamps = [r["timestamp"] for r in data["rows"]]
+        assert timestamps == sorted(timestamps)
+        assert len(timestamps) == len(set(timestamps))
+
+    def test_replay_history_handles_10_and_20_records(self, client):
+        """Verifies both 10-record and 20-record requests return expected slices."""
+        res_10 = client.get("/api/replay-history?limit=10")
+        assert res_10.status_code == 200
+        data_10 = res_10.json()
+        assert data_10["count"] == 10
+        assert len(data_10["rows"]) == 10
+
+        res_20 = client.get("/api/replay-history?limit=20")
+        assert res_20.status_code == 200
+        data_20 = res_20.json()
+        assert data_20["count"] == 20
+        assert len(data_20["rows"]) == 20
+
+        # First 10 rows of 20-row request must match the 10-row request exactly
+        assert [r["timestamp"] for r in data_10["rows"]] == [r["timestamp"] for r in data_20["rows"][:10]]
+
 
 class TestRoutingAndCors:
     """Tests for root route 404 and CORS configuration."""
@@ -188,3 +219,187 @@ class TestRoutingAndCors:
         )
         assert response.status_code == 200
         assert response.headers.get("access-control-allow-origin") == "http://127.0.0.1:5500"
+
+
+class TestReplayControllerEndpoints:
+    """Tests for the automatic historical replay controller and management endpoints."""
+
+    def test_replay_status_initial_state(self, client):
+        response = client.get("/api/replay/status")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["running"] is False
+        assert data["busy"] is False
+        assert data["completed"] is False
+        assert data["current_index"] == 0
+        assert data["total_rows"] == 0
+        assert data["last_error"] is None
+        assert data["last_record"] is None
+        assert data["threshold"] == FINAL_THRESHOLD
+        assert "Simulated replay" in data["data_provenance"]
+
+    def test_replay_lifecycle_start_pause_step_reset(self, client, mock_azure_client):
+        with patch("dashboard_api._azure_client", return_value=mock_azure_client):
+            # 1. Start replay with a long delay so it doesn't auto-run while testing
+            start_payload = {
+                "patient_id": "2001",
+                "session_id": "2001_0_20201102",
+                "twin_id": "P001",
+                "limit": 5,
+                "delay_seconds": 60.0,
+            }
+            start_res = client.post("/api/replay/start", json=start_payload)
+            assert start_res.status_code == 200
+            start_data = start_res.json()
+            assert start_data["success"] is True
+            assert start_data["running"] is True
+            assert start_data["total_rows"] == 5
+            assert start_data["twin_id"] == "P001"
+
+            # 2. Duplicate start is rejected with 409 Conflict
+            dup_res = client.post("/api/replay/start", json=start_payload)
+            assert dup_res.status_code == 409
+            assert "already running" in dup_res.json()["detail"].lower()
+
+            # 3. Pause replay
+            pause_res = client.post("/api/replay/pause")
+            assert pause_res.status_code == 200
+            pause_data = pause_res.json()
+            assert pause_data["running"] is False
+            assert pause_data["paused"] is True
+
+            # Record index after pause (might be 0 or 1 depending on whether first row was processed)
+            idx_before = pause_data["current_index"]
+
+            # 4. Step one record manually
+            step_res = client.post("/api/replay/step")
+            assert step_res.status_code == 200
+            step_data = step_res.json()
+            assert step_data["current_index"] == idx_before + 1
+            assert step_data["last_record"] is not None
+            assert step_data["last_record"]["current_glucose"] > 0
+            assert 0.0 <= step_data["last_record"]["risk_score"] <= 1.0
+            assert step_data["last_record"]["risk_level"] in ("HIGH", "LOW")
+
+            # 5. Reset replay cursor
+            reset_res = client.post("/api/replay/reset")
+            assert reset_res.status_code == 200
+            reset_data = reset_res.json()
+            assert reset_data["current_index"] == 0
+            assert reset_data["last_record"] is None
+            assert reset_data["completed"] is False
+
+    def test_replay_step_failure_honest_reporting(self, client, mock_azure_client):
+        # Start replay, pause it, then simulate an Azure write error during step
+        with patch("dashboard_api._azure_client", return_value=mock_azure_client):
+            start_payload = {
+                "patient_id": "2001",
+                "session_id": "2001_0_20201102",
+                "twin_id": "P001",
+                "limit": 5,
+                "delay_seconds": 60.0,
+            }
+            client.post("/api/replay/start", json=start_payload)
+            client.post("/api/replay/pause")
+
+        status_before = client.get("/api/replay/status").json()
+        idx_before = status_before["current_index"]
+
+        # Now mock azure client failing on update
+        broken_azure = MagicMock()
+        broken_azure.get_digital_twin.return_value = {"$dtId": "P001"}
+        broken_azure.update_digital_twin.side_effect = RuntimeError("Azure update timeout")
+
+        with patch("dashboard_api._azure_client", return_value=broken_azure):
+            step_res = client.post("/api/replay/step")
+            assert step_res.status_code == 502
+            assert "failed" in step_res.json()["detail"].lower()
+
+        # Verify cursor did NOT advance
+        status_after = client.get("/api/replay/status").json()
+        assert status_after["current_index"] == idx_before
+        assert status_after["last_error"] is not None
+        assert "RuntimeError" in status_after["last_error"]
+
+    def test_replay_step_and_reset_uninitialized_raises_409(self, client):
+        step_res = client.post("/api/replay/step")
+        assert step_res.status_code == 409
+        assert "not been initialized" in step_res.json()["detail"]
+
+        reset_res = client.post("/api/replay/reset")
+        assert reset_res.status_code == 409
+        assert "not been initialized" in reset_res.json()["detail"]
+
+    def test_step_and_reset_while_running_raises_409(self, client, mock_azure_client):
+        with patch("dashboard_api._azure_client", return_value=mock_azure_client):
+            start_payload = {
+                "patient_id": "2001",
+                "session_id": "2001_0_20201102",
+                "twin_id": "P001",
+                "limit": 5,
+                "delay_seconds": 60.0,
+            }
+            client.post("/api/replay/start", json=start_payload)
+
+            step_res = client.post("/api/replay/step")
+            assert step_res.status_code == 409
+            assert "pause replay" in step_res.json()["detail"].lower()
+
+            reset_res = client.post("/api/replay/reset")
+            assert reset_res.status_code == 409
+            assert "pause replay" in reset_res.json()["detail"].lower()
+
+            client.post("/api/replay/pause")
+
+    def test_reset_does_not_mutate_or_delete_azure_twin(self, client, mock_azure_client):
+        with patch("dashboard_api._azure_client", return_value=mock_azure_client):
+            start_payload = {
+                "patient_id": "2001",
+                "session_id": "2001_0_20201102",
+                "twin_id": "P001",
+                "limit": 5,
+                "delay_seconds": 60.0,
+            }
+            client.post("/api/replay/start", json=start_payload)
+            client.post("/api/replay/pause")
+
+            # Reset call count on mock
+            mock_azure_client.update_digital_twin.reset_mock()
+            mock_azure_client.delete_digital_twin.reset_mock()
+
+            reset_res = client.post("/api/replay/reset")
+            assert reset_res.status_code == 200
+            assert reset_res.json()["current_index"] == 0
+
+            # Verify reset NEVER touched Azure
+            mock_azure_client.update_digital_twin.assert_not_called()
+            mock_azure_client.delete_digital_twin.assert_not_called()
+
+    def test_replay_resumes_after_pause(self, client, mock_azure_client):
+        with patch("dashboard_api._azure_client", return_value=mock_azure_client):
+            start_payload = {
+                "patient_id": "2001",
+                "session_id": "2001_0_20201102",
+                "twin_id": "P001",
+                "limit": 5,
+                "delay_seconds": 60.0,
+            }
+            client.post("/api/replay/start", json=start_payload)
+            pause_res = client.post("/api/replay/pause").json()
+            idx_after_pause = pause_res["current_index"]
+
+            # Step manually once
+            step_res = client.post("/api/replay/step").json()
+            assert step_res["current_index"] == idx_after_pause + 1
+
+            # Resume by calling start again without reset_cursor
+            resume_res = client.post("/api/replay/start", json=start_payload)
+            assert resume_res.status_code == 200
+            resume_data = resume_res.json()
+            assert resume_data["running"] is True
+            assert resume_data["current_index"] == idx_after_pause + 1
+
+            # Clean up
+            client.post("/api/replay/pause")
+

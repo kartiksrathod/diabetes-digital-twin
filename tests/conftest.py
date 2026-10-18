@@ -57,8 +57,17 @@ def configure_dashboard_test_artifacts(monkeypatch):
 
     dashboard_api._load_dataset.cache_clear()
     dashboard_api._load_model.cache_clear()
+    if hasattr(dashboard_api, "_replay_controller"):
+        dashboard_api._replay_controller._running = False
+        dashboard_api._replay_controller._stop_event.set()
+        dashboard_api._replay_controller = dashboard_api.ReplayController()
     try:
         yield
     finally:
         dashboard_api._load_dataset.cache_clear()
         dashboard_api._load_model.cache_clear()
+        if hasattr(dashboard_api, "_replay_controller"):
+            dashboard_api._replay_controller._running = False
+            dashboard_api._replay_controller._stop_event.set()
+            dashboard_api._replay_controller = dashboard_api.ReplayController()
+

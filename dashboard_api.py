@@ -13,10 +13,14 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
+import threading
+import time
+
+from pydantic import BaseModel, Field
 
 import joblib
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -84,7 +88,7 @@ app.add_middleware(
         "null",  # permits testing from file:// if the browser sends a null origin
     ],
     allow_credentials=False,
-    allow_methods=["GET", "OPTIONS"],
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -189,7 +193,7 @@ def twin_state(twin_id: str = "P001") -> dict[str, Any]:
 def replay_history(
     patient_id: str = Query(default="2001", min_length=1, max_length=50),
     session_id: str = Query(default="2001_0_20201102", min_length=1, max_length=100),
-    limit: int = Query(default=10, ge=2, le=300),
+    limit: int = Query(default=20, ge=2, le=300),
 ) -> dict[str, Any]:
     """Return sequential historical CGM rows and scores from the existing model.
 
@@ -279,5 +283,293 @@ def system_status() -> dict[str, Any]:
         "model_file_exists": MODEL_PATH.exists(),
         "mcp_server": "Separate stdio server; not called directly by browser",
         "antigravity_agent": "Runs in Antigravity; browser does not directly query the agent",
-        "replay_source": "Historical fixture; chart endpoint is read-only",
+        "replay_source": "Historical fixture; automatic replay writes simulated updates to Azure when started",
     }
+
+
+# --- Automatic historical replay controller ---------------------------------
+# This controller is process-local and intended for a single local/hackathon
+# demo instance. It writes simulated historical rows to the configured Azure
+# Digital Twin; it does not represent live wearable telemetry.
+
+class ReplayStartRequest(BaseModel):
+    patient_id: str = Field(default="2001", min_length=1, max_length=50)
+    session_id: str = Field(default="2001_0_20201102", min_length=1, max_length=100)
+    twin_id: str = Field(default="P001", min_length=1, max_length=100)
+    limit: int = Field(default=20, ge=2, le=300)
+    delay_seconds: float = Field(default=2.0, ge=0, le=3600)
+    reset_cursor: bool = Field(default=False)
+
+
+class ReplayController:
+    def __init__(self) -> None:
+        self._lock = threading.RLock()
+        self._worker: threading.Thread | None = None
+        self._stop_event = threading.Event()
+        self._rows: pd.DataFrame | None = None
+        self._patient_id = "2001"
+        self._session_id = "2001_0_20201102"
+        self._twin_id = "P001"
+        self._delay_seconds = 2.0
+        self._index = 0
+        self._running = False
+        self._busy = False
+        self._last_error: str | None = None
+        self._last_record: dict[str, Any] | None = None
+        self._completed = False
+
+    def status(self) -> dict[str, Any]:
+        with self._lock:
+            total = 0 if self._rows is None else len(self._rows)
+            return {
+                "success": True,
+                "running": self._running,
+                "busy": self._busy,
+                "paused": not self._running and total > 0 and not self._completed,
+                "completed": self._completed,
+                "patient_id": self._patient_id,
+                "session_id": self._session_id,
+                "twin_id": self._twin_id,
+                "current_index": self._index,
+                "total_rows": total,
+                "processed_rows": self._index,
+                "delay_seconds": self._delay_seconds,
+                "threshold": FINAL_THRESHOLD,
+                "prediction_window": "Next 2 hours",
+                "data_provenance": "Simulated replay of historical CGM data",
+                "last_error": self._last_error,
+                "last_record": self._last_record,
+            }
+
+    def start(self, request: ReplayStartRequest) -> dict[str, Any]:
+        with self._lock:
+            if self._running:
+                raise HTTPException(status_code=409, detail="Replay is already running.")
+            if self._busy:
+                raise HTTPException(status_code=409, detail="A replay row is currently being processed.")
+            if self._worker is not None and self._worker.is_alive():
+                raise HTTPException(status_code=409, detail="The previous replay worker is still stopping; retry shortly.")
+
+        try:
+            df = _load_dataset()
+            _load_model()  # fail early rather than starting a worker that cannot infer
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Could not load replay data/model: {type(exc).__name__}") from exc
+
+        rows = df[
+            (df["patient_id"].astype(str).str.strip() == request.patient_id.strip())
+            & (df["session_id"].astype(str).str.strip() == request.session_id.strip())
+        ].sort_values("timestamp").head(request.limit).reset_index(drop=True).copy()
+        if len(rows) < 2:
+            raise HTTPException(status_code=404, detail="At least two replay rows are required for automatic replay.")
+
+        # Confirm Azure access and twin identity before starting the background worker.
+        try:
+            _azure_client().get_digital_twin(request.twin_id)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Azure twin read failed: {type(exc).__name__}") from exc
+
+        with self._lock:
+            if self._running or self._busy:
+                raise HTTPException(status_code=409, detail="Replay state changed while starting; retry the request.")
+            can_resume = (
+                self._rows is not None
+                and not request.reset_cursor
+                and not self._completed
+                and self._patient_id == request.patient_id.strip()
+                and self._session_id == request.session_id.strip()
+                and self._twin_id == request.twin_id.strip()
+                and len(self._rows) == len(rows)
+            )
+            self._rows = rows
+            self._patient_id = request.patient_id.strip()
+            self._session_id = request.session_id.strip()
+            self._twin_id = request.twin_id.strip()
+            self._delay_seconds = float(request.delay_seconds)
+            if not can_resume:
+                self._index = 0
+                self._last_error = None
+                self._last_record = None
+                self._completed = False
+            self._stop_event.clear()
+            self._running = True
+            self._worker = threading.Thread(target=self._run, name="glycotwin-replay", daemon=True)
+            self._worker.start()
+        return self.status()
+
+    def _run(self) -> None:
+        while not self._stop_event.is_set():
+            with self._lock:
+                if not self._running:
+                    return
+                total = 0 if self._rows is None else len(self._rows)
+                if self._index >= total:
+                    self._running = False
+                    self._completed = True
+                    return
+                delay = self._delay_seconds
+
+            ok = self._process_next()
+            if not ok:
+                with self._lock:
+                    self._running = False
+                return
+            with self._lock:
+                if not self._running or self._completed:
+                    return
+            if self._stop_event.wait(delay):
+                return
+
+    def _process_next(self) -> bool:
+        with self._lock:
+            if self._rows is None:
+                raise HTTPException(status_code=409, detail="Replay has not been initialized. Start replay first.")
+            if self._busy:
+                raise HTTPException(status_code=409, detail="A replay row is already being processed.")
+            if self._index >= len(self._rows):
+                self._running = False
+                self._completed = True
+                return False
+            row = self._rows.iloc[self._index].copy()
+            row_index = self._index
+            self._busy = True
+
+        try:
+            model = _load_model()
+            score = float(model.predict_proba(row[FEATURES].to_frame().T)[0, 1])
+            level = "HIGH" if score >= FINAL_THRESHOLD else "LOW"
+            current_glucose = float(row["glucose_t0"])
+            delta_30m = float(row["delta_30m"])
+            trend = _trend(delta_30m)
+            age_value = row.get("age")
+            bmi_value = row.get("bmi")
+            hba1c_value = row.get("hba1c")
+            age = int(round(float(age_value))) if pd.notna(age_value) else None
+            bmi = float(bmi_value) if pd.notna(bmi_value) else None
+            hba1c = float(hba1c_value) if pd.notna(hba1c_value) else None
+            source_timestamp = row["timestamp"].isoformat()
+            client = _azure_client()
+            from digital_twin.azure_client import update_patient_twin
+            update_patient_twin(
+                client,
+                self._twin_id,
+                patient_id=str(self._patient_id),
+                age=age,
+                bmi=bmi,
+                hba1c=hba1c,
+                current_glucose=current_glucose,
+                glucose_trend=trend,
+                risk_score=score,
+                risk_level=level,
+                predicted_event="Glucose spike" if level == "HIGH" else "No glucose spike",
+                prediction_window="Next 2 hours",
+                source_timestamp=source_timestamp,
+                delta_30m=delta_30m,
+            )
+            record = {
+                "index": row_index,
+                "timestamp": source_timestamp,
+                "current_glucose": current_glucose,
+                "delta_30m": delta_30m,
+                "glucose_trend": trend,
+                "risk_score": score,
+                "risk_level": level,
+                "predicted_event": "Glucose spike" if level == "HIGH" else "No glucose spike",
+                "prediction_window": "Next 2 hours",
+                "data_provenance": "Simulated replay of historical CGM data",
+            }
+            with self._lock:
+                # Only advance after inference and Azure update both succeed.
+                self._index = row_index + 1
+                self._last_record = record
+                self._last_error = None
+                if self._rows is not None and self._index >= len(self._rows):
+                    self._completed = True
+                    self._running = False
+            return True
+        except HTTPException as exc:
+            with self._lock:
+                self._last_error = str(exc.detail)
+            return False
+        except Exception as exc:
+            with self._lock:
+                self._last_error = f"Replay row {row_index} failed: {type(exc).__name__}"
+            return False
+        finally:
+            with self._lock:
+                self._busy = False
+
+    def pause(self) -> dict[str, Any]:
+        with self._lock:
+            self._running = False
+            self._stop_event.set()
+            worker = self._worker
+        if worker is not None and worker.is_alive() and worker != threading.current_thread():
+            worker.join(timeout=3.0)
+        return self.status()
+
+    def step(self) -> dict[str, Any]:
+        with self._lock:
+            if self._running or self._busy:
+                raise HTTPException(status_code=409, detail="Pause replay and wait for in-flight operations before stepping.")
+            if self._rows is None:
+                raise HTTPException(status_code=409, detail="Replay has not been initialized. Start replay first.")
+            if self._completed or self._index >= len(self._rows):
+                raise HTTPException(status_code=409, detail="Replay is complete. Reset the cursor to replay again.")
+        ok = self._process_next()
+        if not ok:
+            state = self.status()
+            raise HTTPException(status_code=502, detail=state.get("last_error") or "Replay row failed.")
+        return self.status()
+
+    def reset(self) -> dict[str, Any]:
+        with self._lock:
+            if self._running:
+                raise HTTPException(status_code=409, detail="Pause replay and wait for the current row to finish before resetting.")
+            worker = self._worker
+        if worker is not None and worker.is_alive() and worker != threading.current_thread():
+            worker.join(timeout=3.0)
+        with self._lock:
+            if self._running or self._busy:
+                raise HTTPException(status_code=409, detail="Pause replay and wait for the current row to finish before resetting.")
+            if self._rows is None:
+                raise HTTPException(status_code=409, detail="Replay has not been initialized. Start replay first.")
+            self._index = 0
+            self._last_error = None
+            self._last_record = None
+            self._completed = False
+            self._stop_event.clear()
+        return self.status()
+
+
+
+_replay_controller = ReplayController()
+
+
+@app.post("/api/replay/start")
+def replay_start(request: ReplayStartRequest = Body(default_factory=ReplayStartRequest)) -> dict[str, Any]:
+    return _replay_controller.start(request)
+
+
+@app.post("/api/replay/pause")
+def replay_pause() -> dict[str, Any]:
+    return _replay_controller.pause()
+
+
+@app.post("/api/replay/step")
+def replay_step() -> dict[str, Any]:
+    return _replay_controller.step()
+
+
+@app.post("/api/replay/reset")
+def replay_reset() -> dict[str, Any]:
+    return _replay_controller.reset()
+
+
+@app.get("/api/replay/status")
+def replay_status() -> dict[str, Any]:
+    return _replay_controller.status()
