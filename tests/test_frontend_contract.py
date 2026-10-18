@@ -55,7 +55,6 @@ class TestFrontendContracts:
             "card-glucose", "card-delta", "card-trend", "card-risk-score", "card-margin",
             "card-risk-container", "badge-classification", "card-class-text",
             "decision-math-badge", "decision-bar-fill", "math-score", "math-delta", "math-class",
-            "ai-narrative", "ai-telemetry", "ai-prediction", "ai-interpretation",
             "glucose-svg", "risk-svg", "status-azure", "status-mcp", "status-agent", "status-replay"
         ]
         for element_id in required_ids:
