@@ -195,7 +195,7 @@ Glucose Pattern Analysis
 
 <p align="center"><b>📥 Inputs &nbsp;➡️&nbsp; ⚙️ Processing &nbsp;➡️&nbsp; 🤖 Models &nbsp;➡️&nbsp; 📊 Results</b></p>
 
-📄 **Want the full-size picture?** [View the architecture diagram (PDF)](https://drive.google.com/file/d/1qorq1XEy9iq5TBT-sigGCrkG5YOo8DD1/view?usp=drive_link)
+📄 **Want the full-size picture?** [View the architecture diagram (PDF)](https://drive.google.com/file/d/1Z2wh5RpDk_a9aoDLiz5Hg32NqdLZUmER/view)
 
 ---
 
@@ -406,7 +406,7 @@ A starting point for experiments with combined health data and models.
 | Resource | Link |
 |:--|:--|
 | 💻 **GitHub Repository** | [Open repository](https://github.com/kartiksrathod/diabetes-digital-twin) |
-| 🏗️ **Architecture Diagram** | [View PDF](https://drive.google.com/file/d/1qorq1XEy9iq5TBT-sigGCrkG5YOo8DD1/view?usp=drive_link) |
+| 🏗️ **Architecture Diagram** | [View PDF](https://drive.google.com/file/d/1Z2wh5RpDk_a9aoDLiz5Hg32NqdLZUmER/view) |
 | 🎤 **Presentation** |[View PDF](https://docs.google.com/presentation/d/16h6F6Qe4msZy9qSArKuqu8pII77lx33e/edit?usp=sharing&ouid=113833214796657597708&rtpof=true&sd=true)|
 | 🎬 **Demo Video** | [Watch Yt Video](https://youtu.be/g3dBnFpAKuk) |
 
